@@ -16,12 +16,15 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.acceleo.query.runtime.CrossReferenceProvider;
 import org.eclipse.acceleo.query.runtime.EvaluationResult;
 import org.eclipse.acceleo.query.runtime.IQueryBuilderEngine;
 import org.eclipse.acceleo.query.runtime.IQueryBuilderEngine.AstResult;
@@ -34,9 +37,12 @@ import org.eclipse.acceleo.query.runtime.QueryParsing;
 import org.eclipse.acceleo.query.runtime.ServiceUtils;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EStringToStringMapEntryImpl;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +52,29 @@ import org.slf4j.LoggerFactory;
  * @author sbegaudeau
  */
 public class AQLInterpreter {
+
+    /**
+     * {@link CrossReferenceProvider} implementation which simply looks for an existing {@link ECrossReferenceAdapter}
+     * already attached to the source {@link EObject}. Returns an empty set of references without any error if no
+     * {@link ECrossReferenceAdapter} is found.
+     */
+    private static final class SimpleCrossReferenceProvider implements CrossReferenceProvider {
+        @Override
+        public Collection<Setting> getInverseReferences(EObject self) {
+            if (self != null) {
+                // @formatter:off
+                var xref = self.eAdapters().stream()
+                               .filter(ECrossReferenceAdapter.class::isInstance)
+                               .map(ECrossReferenceAdapter.class::cast)
+                               .findFirst();
+                // @formatter:on
+                if (xref.isPresent()) {
+                    return xref.get().getInverseReferences(self);
+                }
+            }
+            return Collections.emptySet();
+        }
+    }
 
     /**
      * The prefix used by AQL expressions.
@@ -74,7 +103,7 @@ public class AQLInterpreter {
      *            to classes, such as <semanticMM>::<AClass>, can be interpreted.
      */
     public AQLInterpreter(List<Class<?>> classes, List<EPackage> ePackages) {
-        this.queryEnvironment = Query.newEnvironmentWithDefaultServices(null);
+        this.queryEnvironment = Query.newEnvironmentWithDefaultServices(new SimpleCrossReferenceProvider());
         this.queryEnvironment.registerEPackage(EcorePackage.eINSTANCE);
         this.queryEnvironment.registerCustomClassMapping(EcorePackage.eINSTANCE.getEStringToStringMapEntry(), EStringToStringMapEntryImpl.class);
 

@@ -25,6 +25,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
@@ -75,6 +76,7 @@ public class EditingContextFactory implements IEditingContextFactory {
         this.logger.debug(MessageFormat.format("Loading the editing context of the project \"{0}\"", projectId)); //$NON-NLS-1$
         ResourceSet resourceSet = new ResourceSetImpl();
         resourceSet.setPackageRegistry(this.ePackageRegistry);
+        resourceSet.eAdapters().add(new ECrossReferenceAdapter());
 
         List<DocumentEntity> documentEntities = this.documentRepository.findAllByProjectId(projectId);
         for (DocumentEntity documentEntity : documentEntities) {
