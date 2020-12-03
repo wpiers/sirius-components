@@ -11,7 +11,6 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import { HORIZONTAL, Panels, SECOND_PANEL } from 'core/panels/Panels';
-import { forbidExtraProps } from 'airbnb-prop-types';
 import { ExplorerWebSocketContainer } from 'explorer/ExplorerWebSocketContainer';
 import { EditProjectNavbar } from 'navbar/EditProjectNavbar/EditProjectNavbar';
 import PropTypes from 'prop-types';
@@ -20,13 +19,11 @@ import React from 'react';
 import { RepresentationArea } from 'views/edit-project/RepresentationArea';
 import styles from './EditProjectLoadedView.module.css';
 
-const selectionPropType = PropTypes.shape(
-  forbidExtraProps({
-    id: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    kind: PropTypes.string.isRequired,
-  })
-);
+const selectionPropType = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  kind: PropTypes.string.isRequired,
+});
 const propTypes = {
   subscribers: PropTypes.array.isRequired,
   representations: PropTypes.array.isRequired,

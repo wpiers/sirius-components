@@ -13,12 +13,11 @@
 import commonjs from '@rollup/plugin-commonjs';
 import image from '@rollup/plugin-image';
 import resolve from '@rollup/plugin-node-resolve';
-import { eslint } from "rollup-plugin-eslint";
+import { eslint } from 'rollup-plugin-eslint';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import postcss from 'rollup-plugin-postcss';
 import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
-import { getTransformer } from 'ts-transform-graphql-tag';
 
 const packageJson = require('./package.json');
 
@@ -46,7 +45,7 @@ export default {
     resolve(),
     commonjs(),
     eslint(),
-    typescript({ useTsconfigDeclarationDir: true, transformers: [graphQLTransformer] }),
+    typescript({ useTsconfigDeclarationDir: true }),
     postcss({
       modules: true,
       minimize: true,
