@@ -26,15 +26,17 @@ import org.eclipse.sirius.diagram.business.internal.metamodel.helper.LayerHelper
 import org.eclipse.sirius.diagram.description.AdditionalLayer;
 import org.eclipse.sirius.diagram.description.ContainerMappingImport;
 import org.eclipse.sirius.diagram.description.Layer;
-import org.eclipse.sirius.web.compat.diagrams.CanCreateDiagramPredicate;
+import org.eclipse.sirius.web.compat.api.IAQLInterpreterFactory;
+import org.eclipse.sirius.web.compat.api.ICanCreateDiagramPredicateFactory;
+import org.eclipse.sirius.web.compat.api.IIdentifierProvider;
+import org.eclipse.sirius.web.compat.api.IModelOperationHandlerSwitchProvider;
+import org.eclipse.sirius.web.compat.api.ISemanticCandidatesProviderFactory;
 import org.eclipse.sirius.web.compat.diagrams.ContainerMappingConverter;
 import org.eclipse.sirius.web.compat.diagrams.DiagramLabelProvider;
 import org.eclipse.sirius.web.compat.diagrams.EdgeMappingConverter;
 import org.eclipse.sirius.web.compat.diagrams.NodeMappingConverter;
 import org.eclipse.sirius.web.compat.services.diagrams.api.IDiagramDescriptionConverter;
-import org.eclipse.sirius.web.compat.services.representations.AQLInterpreterFactory;
 import org.eclipse.sirius.web.compat.services.representations.IdentifiedElementLabelProvider;
-import org.eclipse.sirius.web.compat.services.representations.IdentifierProvider;
 import org.eclipse.sirius.web.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.web.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.web.diagrams.description.NodeDescription;
@@ -55,23 +57,33 @@ public class DiagramDescriptionConverter implements IDiagramDescriptionConverter
 
     private final IObjectService objectService;
 
-    private final AQLInterpreterFactory interpreterFactory;
+    private final IAQLInterpreterFactory interpreterFactory;
 
     private final IEditService editService;
 
-    private final IdentifierProvider identifierProvider;
+    private final IIdentifierProvider identifierProvider;
+
+    private final ISemanticCandidatesProviderFactory semanticCandidatesProviderFactory;
+
+    private final ICanCreateDiagramPredicateFactory canCreateDiagramPredicateFactory;
+
+    private final IModelOperationHandlerSwitchProvider modelOperationHandlerSwitchProvider;
 
     private final IdentifiedElementLabelProvider identifiedElementLabelProvider;
 
     private final IToolProvider toolProvider;
 
-    public DiagramDescriptionConverter(IObjectService objectService, IEditService editService, AQLInterpreterFactory interpreterFactory, IdentifierProvider identifierProvider,
-            IdentifiedElementLabelProvider identifiedElementLabelProvider, IToolProvider toolProvider) {
+    public DiagramDescriptionConverter(IObjectService objectService, IEditService editService, IAQLInterpreterFactory interpreterFactory, IIdentifierProvider identifierProvider,
+            ISemanticCandidatesProviderFactory semanticCandidatesProviderFactory, ICanCreateDiagramPredicateFactory canCreateDiagramPredicateFactory,
+            IModelOperationHandlerSwitchProvider modelOperationHandlerSwitchProvider, IdentifiedElementLabelProvider identifiedElementLabelProvider, IToolProvider toolProvider) {
         this.objectService = Objects.requireNonNull(objectService);
         this.interpreterFactory = Objects.requireNonNull(interpreterFactory);
         this.editService = Objects.requireNonNull(editService);
         this.identifierProvider = Objects.requireNonNull(identifierProvider);
+        this.semanticCandidatesProviderFactory = Objects.requireNonNull(semanticCandidatesProviderFactory);
+        this.canCreateDiagramPredicateFactory = Objects.requireNonNull(canCreateDiagramPredicateFactory);
         this.identifiedElementLabelProvider = Objects.requireNonNull(identifiedElementLabelProvider);
+        this.modelOperationHandlerSwitchProvider = Objects.requireNonNull(modelOperationHandlerSwitchProvider);
         this.toolProvider = Objects.requireNonNull(toolProvider);
     }
 
@@ -83,7 +95,7 @@ public class DiagramDescriptionConverter implements IDiagramDescriptionConverter
         Map<UUID, NodeDescription> id2NodeDescriptions = new HashMap<>();
 
         // @formatter:off
-        ContainerMappingConverter containerMappingConverter = new ContainerMappingConverter(this.objectService, this.editService, interpreter, this.identifierProvider);
+        ContainerMappingConverter containerMappingConverter = new ContainerMappingConverter(this.objectService, this.editService, interpreter, this.identifierProvider, this.semanticCandidatesProviderFactory, this.modelOperationHandlerSwitchProvider);
         List<Layer> layers = LayerHelper.getAllLayers(siriusDiagramDescription).stream()
                 .filter(this::isEnabledByDefault)
                 .collect(Collectors.toList());
@@ -95,7 +107,7 @@ public class DiagramDescriptionConverter implements IDiagramDescriptionConverter
         // @formatter:on
 
         // @formatter:off
-        NodeMappingConverter nodeMappingConverter = new NodeMappingConverter(this.objectService, this.editService, interpreter, this.identifierProvider);
+        NodeMappingConverter nodeMappingConverter = new NodeMappingConverter(this.objectService, this.editService, interpreter, this.identifierProvider, this.semanticCandidatesProviderFactory, this.modelOperationHandlerSwitchProvider);
         List<NodeDescription> nodeDescriptions = layers.stream()
                 .flatMap(layer -> layer.getNodeMappings().stream())
                 .map(nodeMapping -> nodeMappingConverter.convert(nodeMapping, id2NodeDescriptions))
@@ -104,7 +116,7 @@ public class DiagramDescriptionConverter implements IDiagramDescriptionConverter
         nodeDescriptions.addAll(containerDescriptions);
 
         // @formatter:off
-        EdgeMappingConverter edgeMappingConverter = new EdgeMappingConverter(this.objectService, this.editService, interpreter, this.identifierProvider, id2NodeDescriptions);
+        EdgeMappingConverter edgeMappingConverter = new EdgeMappingConverter(this.objectService, this.editService, interpreter, this.identifierProvider, this.semanticCandidatesProviderFactory, this.modelOperationHandlerSwitchProvider, id2NodeDescriptions);
         List<EdgeDescription> edgeDescriptions = layers.stream()
                 .flatMap(layer -> layer.getEdgeMappings().stream())
                 .map(edgeMappingConverter::convert)
@@ -116,7 +128,7 @@ public class DiagramDescriptionConverter implements IDiagramDescriptionConverter
             return Optional.ofNullable(object).map(this.objectService::getId).orElse(null);
         };
 
-        Predicate<VariableManager> canCreatePredicate = new CanCreateDiagramPredicate(siriusDiagramDescription, interpreter);
+        Predicate<VariableManager> canCreatePredicate = this.canCreateDiagramPredicateFactory.getCanCreateDiagramPredicate(siriusDiagramDescription, interpreter);
 
         // @formatter:off
         return DiagramDescription.newDiagramDescription(UUID.fromString(this.identifierProvider.getIdentifier(siriusDiagramDescription)))

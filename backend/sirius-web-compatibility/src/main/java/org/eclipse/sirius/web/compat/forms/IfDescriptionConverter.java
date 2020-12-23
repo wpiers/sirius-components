@@ -16,7 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.sirius.properties.DynamicMappingIfDescription;
-import org.eclipse.sirius.web.compat.services.representations.IdentifierProvider;
+import org.eclipse.sirius.web.compat.api.IIdentifierProvider;
+import org.eclipse.sirius.web.compat.api.IModelOperationHandlerSwitchProvider;
 import org.eclipse.sirius.web.compat.utils.BooleanValueProvider;
 import org.eclipse.sirius.web.forms.description.AbstractWidgetDescription;
 import org.eclipse.sirius.web.forms.description.IfDescription;
@@ -34,17 +35,21 @@ public class IfDescriptionConverter {
 
     private final IObjectService objectService;
 
-    private final IdentifierProvider identifierProvider;
+    private final IIdentifierProvider identifierProvider;
 
-    public IfDescriptionConverter(AQLInterpreter interpreter, IObjectService objectService, IdentifierProvider identifierProvider) {
+    private final IModelOperationHandlerSwitchProvider modelOperationHandlerSwitchProvider;
+
+    public IfDescriptionConverter(AQLInterpreter interpreter, IObjectService objectService, IIdentifierProvider identifierProvider,
+            IModelOperationHandlerSwitchProvider modelOperationHandlerSwitchProvider) {
         this.interpreter = Objects.requireNonNull(interpreter);
         this.objectService = Objects.requireNonNull(objectService);
         this.identifierProvider = Objects.requireNonNull(identifierProvider);
+        this.modelOperationHandlerSwitchProvider = Objects.requireNonNull(modelOperationHandlerSwitchProvider);
     }
 
     public Optional<IfDescription> convert(org.eclipse.sirius.properties.DynamicMappingIfDescription siriusIfDescription) {
         BooleanValueProvider predicate = new BooleanValueProvider(this.interpreter, siriusIfDescription.getPredicateExpression());
-        WidgetDescriptionConverter converter = new WidgetDescriptionConverter(this.interpreter, this.objectService, this.identifierProvider);
+        WidgetDescriptionConverter converter = new WidgetDescriptionConverter(this.interpreter, this.objectService, this.identifierProvider, this.modelOperationHandlerSwitchProvider);
 
         Optional<AbstractWidgetDescription> optionalWidgetDescription = converter.convert(siriusIfDescription.getWidget());
         return optionalWidgetDescription.map(widgetDescription -> {

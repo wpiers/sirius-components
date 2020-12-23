@@ -23,6 +23,8 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.sirius.viewpoint.description.tool.ChangeContext;
 import org.eclipse.sirius.viewpoint.description.tool.ToolFactory;
 import org.eclipse.sirius.viewpoint.description.tool.Unset;
+import org.eclipse.sirius.web.emf.compatibility.modeloperations.ChildModelOperationHandler;
+import org.eclipse.sirius.web.emf.compatibility.modeloperations.UnsetOperationHandler;
 import org.eclipse.sirius.web.representations.Status;
 import org.junit.Before;
 import org.junit.Test;

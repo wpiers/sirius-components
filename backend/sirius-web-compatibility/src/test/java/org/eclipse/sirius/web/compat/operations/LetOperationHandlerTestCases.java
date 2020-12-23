@@ -21,6 +21,8 @@ import org.eclipse.emf.ecore.ENamedElement;
 import org.eclipse.sirius.viewpoint.description.tool.ChangeContext;
 import org.eclipse.sirius.viewpoint.description.tool.Let;
 import org.eclipse.sirius.viewpoint.description.tool.ToolFactory;
+import org.eclipse.sirius.web.emf.compatibility.modeloperations.ChildModelOperationHandler;
+import org.eclipse.sirius.web.emf.compatibility.modeloperations.LetOperationHandler;
 import org.eclipse.sirius.web.representations.Status;
 import org.junit.Before;
 import org.junit.Test;

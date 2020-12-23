@@ -18,13 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.sirius.diagram.description.AbstractNodeMapping;
 import org.eclipse.sirius.diagram.description.ContainerMapping;
 import org.eclipse.sirius.diagram.description.DescriptionFactory;
 import org.eclipse.sirius.diagram.description.EdgeMapping;
 import org.eclipse.sirius.diagram.description.NodeMapping;
-import org.eclipse.sirius.web.compat.services.representations.IdentifierProvider;
+import org.eclipse.sirius.web.compat.api.IIdentifierProvider;
 import org.eclipse.sirius.web.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
 import org.eclipse.sirius.web.diagrams.description.LabelStyleDescription;
@@ -40,16 +38,6 @@ import org.junit.Test;
  * @author sbegaudeau
  */
 public class EdgeMappingConverterTestCases {
-
-    private IdentifierProvider identifierProvider = new IdentifierProvider(new NoOpIdMappingRepository(), 1) {
-        @Override
-        public String getIdentifier(EObject vsmElement) {
-            if (vsmElement instanceof AbstractNodeMapping) {
-                return UUID.nameUUIDFromBytes(((AbstractNodeMapping) vsmElement).getName().getBytes()).toString();
-            }
-            return super.getIdentifier(vsmElement);
-        }
-    };
 
     /**
      * Non-regression test for the create edges issue. This test will ensure that a container description can be used as
@@ -73,7 +61,9 @@ public class EdgeMappingConverterTestCases {
                 containerMappingUUID, this.createNodeDescription(containerMappingUUID)
         );
         // @formatter:on
-        EdgeMappingConverter edgeMappingConverter = new EdgeMappingConverter(new NoOpObjectService(), new NoOpEditService(), new AQLInterpreter(List.of(), List.of()), this.identifierProvider,
+
+        IIdentifierProvider identifierProvider = element -> containerMappingUUID.toString();
+        EdgeMappingConverter edgeMappingConverter = new EdgeMappingConverter(new NoOpObjectService(), new NoOpEditService(), new AQLInterpreter(List.of(), List.of()), identifierProvider,
                 id2NodeDescriptions);
 
         EdgeDescription edgeDescription = edgeMappingConverter.convert(edgeMapping);
@@ -137,7 +127,8 @@ public class EdgeMappingConverterTestCases {
                 containerMappingUUID, this.createNodeDescription(containerMappingUUID)
         );
         // @formatter:on
-        EdgeMappingConverter edgeMappingConverter = new EdgeMappingConverter(new NoOpObjectService(), new NoOpEditService(), new AQLInterpreter(List.of(), List.of()), this.identifierProvider,
+        IIdentifierProvider identifierProvider = element -> containerMappingUUID.toString();
+        EdgeMappingConverter edgeMappingConverter = new EdgeMappingConverter(new NoOpObjectService(), new NoOpEditService(), new AQLInterpreter(List.of(), List.of()), identifierProvider,
                 id2NodeDescriptions);
 
         EdgeDescription edgeDescription = edgeMappingConverter.convert(edgeMapping);
@@ -166,7 +157,8 @@ public class EdgeMappingConverterTestCases {
                 targetContainerMappingUUID, this.createNodeDescription(targetContainerMappingUUID)
         );
         // @formatter:on
-        EdgeMappingConverter edgeMappingConverter = new EdgeMappingConverter(new NoOpObjectService(), new NoOpEditService(), new AQLInterpreter(List.of(), List.of()), this.identifierProvider,
+        IIdentifierProvider identifierProvider = element -> targetContainerMappingUUID.toString();
+        EdgeMappingConverter edgeMappingConverter = new EdgeMappingConverter(new NoOpObjectService(), new NoOpEditService(), new AQLInterpreter(List.of(), List.of()), identifierProvider,
                 id2NodeDescriptions);
 
         EdgeDescription edgeDescription = edgeMappingConverter.convert(edgeMapping);

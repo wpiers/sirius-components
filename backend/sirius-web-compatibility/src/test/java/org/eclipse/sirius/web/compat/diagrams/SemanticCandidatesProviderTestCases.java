@@ -22,7 +22,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.ENamedElement;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.sirius.web.compat.utils.SemanticCandidatesProvider;
+import org.eclipse.sirius.web.emf.compatibility.SemanticCandidatesProvider;
 import org.eclipse.sirius.web.interpreter.AQLInterpreter;
 import org.eclipse.sirius.web.representations.VariableManager;
 import org.junit.Test;

@@ -20,7 +20,9 @@ import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.util.EcoreAdapterFactory;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
+import org.eclipse.sirius.common.tools.internal.ecore.EPackageHelper;
 import org.eclipse.sirius.web.emf.services.ILabelFeatureProvider;
+import org.eclipse.sirius.web.emf.services.ISuggestedRootObjectTypesProvider;
 import org.eclipse.sirius.web.emf.services.LabelFeatureProviderRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,5 +54,10 @@ public class EMFConfiguration {
         LabelFeatureProviderRegistry providerRegistry = new LabelFeatureProviderRegistry();
         providers.forEach(provider -> providerRegistry.put(provider.getEPackageNsUri(), provider));
         return providerRegistry;
+    }
+
+    @Bean
+    public ISuggestedRootObjectTypesProvider suggestedRootObjectTypesProvider() {
+        return EPackageHelper::getEClassRootElements;
     }
 }

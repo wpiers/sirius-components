@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.sirius.web.emf.compatibility.DomainClassPredicate;
 import org.junit.Test;
 
 /**

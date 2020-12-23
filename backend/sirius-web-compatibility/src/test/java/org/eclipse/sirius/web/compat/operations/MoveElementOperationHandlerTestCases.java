@@ -23,6 +23,8 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.sirius.viewpoint.description.tool.ChangeContext;
 import org.eclipse.sirius.viewpoint.description.tool.MoveElement;
 import org.eclipse.sirius.viewpoint.description.tool.ToolFactory;
+import org.eclipse.sirius.web.emf.compatibility.modeloperations.ChildModelOperationHandler;
+import org.eclipse.sirius.web.emf.compatibility.modeloperations.MoveElementOperationHandler;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 import org.junit.Before;

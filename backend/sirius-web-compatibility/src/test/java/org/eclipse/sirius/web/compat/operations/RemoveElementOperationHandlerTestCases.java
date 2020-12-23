@@ -16,6 +16,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.sirius.viewpoint.description.tool.RemoveElement;
 import org.eclipse.sirius.viewpoint.description.tool.ToolFactory;
+import org.eclipse.sirius.web.emf.compatibility.modeloperations.ChildModelOperationHandler;
+import org.eclipse.sirius.web.emf.compatibility.modeloperations.RemoveElementOperationHandler;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 import org.junit.Before;

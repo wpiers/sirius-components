@@ -198,7 +198,7 @@ public class EditService implements IEditService {
                 .map(EObject.class::cast);
         // @formatter:on
 
-        optionalEObject.ifPresent(o -> EcoreUtil.deleteAll(Collections.singleton(o), true));
+        optionalEObject.ifPresent(eObject -> EcoreUtil.deleteAll(Collections.singleton(eObject), true));
     }
 
     @Override
