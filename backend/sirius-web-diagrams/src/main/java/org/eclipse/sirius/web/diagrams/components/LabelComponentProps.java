@@ -13,8 +13,10 @@
 package org.eclipse.sirius.web.diagrams.components;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.sirius.web.components.IProps;
+import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -29,9 +31,15 @@ public class LabelComponentProps implements IProps {
 
     private final LabelDescription labelDescription;
 
-    public LabelComponentProps(VariableManager variableManager, LabelDescription labelDescription) {
+    private final Optional<Label> optionalPreviousLabel;
+
+    private final LabelBoundsProvider labelBoundsProvider;
+
+    public LabelComponentProps(VariableManager variableManager, LabelDescription labelDescription, Optional<Label> optionalPreviousLabel, LabelBoundsProvider labelBoundsProvider) {
         this.variableManager = Objects.requireNonNull(variableManager);
         this.labelDescription = Objects.requireNonNull(labelDescription);
+        this.optionalPreviousLabel = Objects.requireNonNull(optionalPreviousLabel);
+        this.labelBoundsProvider = Objects.requireNonNull(labelBoundsProvider);
     }
 
     public VariableManager getVariableManager() {
@@ -40,6 +48,14 @@ public class LabelComponentProps implements IProps {
 
     public LabelDescription getLabelDescription() {
         return this.labelDescription;
+    }
+
+    public Optional<Label> getPreviousLabel() {
+        return this.optionalPreviousLabel;
+    }
+
+    public LabelBoundsProvider getLabelBoundsProvider() {
+        return this.labelBoundsProvider;
     }
 
 }

@@ -13,12 +13,12 @@
 package org.eclipse.sirius.web.diagrams.components;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IComponent;
+import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.LabelStyle;
-import org.eclipse.sirius.web.diagrams.Position;
-import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
 import org.eclipse.sirius.web.diagrams.description.LabelStyleDescription;
 import org.eclipse.sirius.web.diagrams.elements.LabelElementProps;
@@ -41,6 +41,8 @@ public class LabelComponent implements IComponent {
     public Element render() {
         VariableManager variableManager = this.props.getVariableManager();
         LabelDescription labelDescription = this.props.getLabelDescription();
+        Optional<Label> optionalPreviousLabel = this.props.getPreviousLabel();
+        LabelBoundsProvider labelBoundsProvider = this.props.getLabelBoundsProvider();
 
         String id = labelDescription.getIdProvider().apply(variableManager);
         String text = labelDescription.getTextProvider().apply(variableManager);
@@ -71,9 +73,9 @@ public class LabelComponent implements IComponent {
         LabelElementProps labelElementProps = LabelElementProps.newLabelElementProps(id)
                 .type("label:inside-center") //$NON-NLS-1$
                 .text(text)
-                .position(Position.UNDEFINED)
-                .size(Size.UNDEFINED)
-                .alignment(Position.UNDEFINED)
+                .position(optionalPreviousLabel.map(Label::getPosition).orElse(labelBoundsProvider.getPosition()))
+                .size(optionalPreviousLabel.map(Label::getSize).orElse(labelBoundsProvider.getSize()))
+                .alignment(optionalPreviousLabel.map(Label::getAlignment).orElse(labelBoundsProvider.getAlignment()))
                 .style(labelStyle)
                 .build();
         // @formatter:on
