@@ -115,24 +115,21 @@ public class NodeComponent implements IComponent {
         String targetObjectKind = nodeDescription.getTargetObjectKindProvider().apply(nodeVariableManager);
         String targetObjectLabel = nodeDescription.getTargetObjectLabelProvider().apply(nodeVariableManager);
 
+        IDiagramElementRequestor diagramElementRequestor = new DiagramElementRequestor();
         INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
 
-        IDiagramElementRequestor diagramElementRequestor = new DiagramElementRequestor();
+        Position position = nodePositionProvider.getPosition(nodeId, optionalPreviousNode, this.props.getPreviousParentElement(), nodeSizeProvider, style);
 
         //@formatter:off
-        Position position = optionalPreviousNode
-                .map(Node::getPosition)
-                .orElseGet(() -> nodePositionProvider.getNextPosition(
-                        this.props.getPreviousParentElement(),
-                        nodeSizeProvider.getSize(style, List.of()) // FIXME we do not know the child nodes yet
-                ));
-        //@formatter:on
-        Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition().map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
-
-        var borderNodes = nodeDescription.getBorderNodeDescriptions().stream().map(borderNodeDescription -> {
-            List<Node> previousBorderNodes = optionalPreviousNode.map(previousNode -> diagramElementRequestor.getBorderNodes(previousNode, borderNodeDescription)).orElse(List.of());
-            INodesRequestor borderNodesRequestor = new NodesRequestor(previousBorderNodes);
-            //@formatter:off
+        Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition()
+                .map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
+        var borderNodes = nodeDescription.getBorderNodeDescriptions()
+                .stream()
+                .map(borderNodeDescription -> {
+                    List<Node> previousBorderNodes = optionalPreviousNode
+                            .map(previousNode -> diagramElementRequestor.getBorderNodes(previousNode, borderNodeDescription))
+                            .orElse(List.of());
+                    INodesRequestor borderNodesRequestor = new NodesRequestor(previousBorderNodes);
                     var nodeComponentProps = NodeComponentProps.newNodeComponentProps()
                             .variableManager(nodeVariableManager)
                             .nodeDescription(borderNodeDescription)
@@ -145,11 +142,9 @@ public class NodeComponent implements IComponent {
                             .previousParentElement(optionalPreviousNode.map(Object.class::cast))
                             .optionalParentAbsolutePosition(absolutePosition)
                             .build();
-                    //@formatter:on
-            return new Element(NodeComponent.class, nodeComponentProps);
-        }).collect(Collectors.toList());
-
-        //@formatter:off
+                    return new Element(NodeComponent.class, nodeComponentProps);
+                    })
+                .collect(Collectors.toList());
         var childNodes = nodeDescription.getChildNodeDescriptions()
                 .stream()
                 .map(childNodeDescription -> {
@@ -170,7 +165,8 @@ public class NodeComponent implements IComponent {
                     .optionalParentAbsolutePosition(absolutePosition)
                     .build();
             return new Element(NodeComponent.class, nodeComponentProps);
-        }).collect(Collectors.toList());
+        })
+                .collect(Collectors.toList());
         //@formatter:on
 
         Size size = optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize(style, childNodes));
@@ -184,7 +180,6 @@ public class NodeComponent implements IComponent {
         nodeChildren.add(labelElement);
         nodeChildren.addAll(borderNodes);
         nodeChildren.addAll(childNodes);
-
         // @formatter:off
         NodeElementProps nodeElementProps = NodeElementProps.newNodeElementProps(nodeId)
                 .type(type)

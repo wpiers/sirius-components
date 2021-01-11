@@ -135,6 +135,7 @@ const initializeAction = (prevState, action) => {
     diagramDomElement,
     deleteElements,
     invokeTool,
+    moveElement,
     editLabel,
     onSelectElement,
     toolSections,
@@ -152,6 +153,7 @@ const initializeAction = (prevState, action) => {
   diagramServer.setLogger(container.get(TYPES.ILogger));
 
   diagramServer.setEditLabelListener(editLabel);
+  diagramServer.setMoveElementListener(moveElement);
   diagramServer.setDeleteElementsListener(deleteElements);
   diagramServer.setInvokeToolListener(invokeTool);
   diagramServer.setContextualPaletteListener(setContextualPalette);
