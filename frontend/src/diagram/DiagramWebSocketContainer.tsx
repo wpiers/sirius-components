@@ -56,6 +56,7 @@ import {
   getToolSectionsQuery,
   invokeEdgeToolOnDiagramMutation,
   invokeNodeToolOnDiagramMutation,
+  updateNodePositionOp,
 } from './operations';
 
 const propTypes = {
@@ -249,6 +250,7 @@ export const DiagramWebSocketContainer = ({
   const [invokeNodeToolMutation] = useMutation(invokeNodeToolOnDiagramMutation);
   const [invokeEdgeToolMutation] = useMutation(invokeEdgeToolOnDiagramMutation);
   const [editLabelMutation] = useMutation(editLabelMutationOp);
+  const [updateNodePositionMutation] = useMutation(updateNodePositionOp);
   const [getToolSectionData, { loading: toolSectionLoading, data: toolSectionData }] = useLazyQuery(
     getToolSectionsQuery
   );
@@ -359,6 +361,19 @@ export const DiagramWebSocketContainer = ({
     },
     [projectId, representationId, invokeNodeToolMutation, invokeEdgeToolMutation]
   );
+  const moveElement = useCallback(
+    (diagramElementId, newPositionX, newPositionY) => {
+      const input = {
+        projectId,
+        representationId,
+        diagramElementId,
+        newPositionX,
+        newPositionY
+      };
+      updateNodePositionMutation({ variables: { input } });
+    },
+    [projectId, representationId, updateNodePositionMutation]
+  );
 
   /**
    * Initialize the diagram server used by Sprotty in order to perform the diagram edition. This
@@ -409,6 +424,7 @@ export const DiagramWebSocketContainer = ({
         diagramDomElement,
         deleteElements,
         invokeTool,
+        moveElement,
         editLabel,
         onSelectElement,
         toolSections,
@@ -422,6 +438,7 @@ export const DiagramWebSocketContainer = ({
     setSelection,
     deleteElements,
     invokeTool,
+    moveElement,
     editLabelMutation,
     toolSections,
     selection,

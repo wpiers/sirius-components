@@ -14,6 +14,7 @@ package org.eclipse.sirius.web.diagrams.components;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,7 +46,8 @@ public class DiagramComponent implements IComponent {
     public Element render() {
         VariableManager variableManager = this.props.getVariableManager();
         DiagramDescription diagramDescription = this.props.getDiagramDescription();
-        NodePositionProvider nodePositionProvider = new NodePositionProvider(Double.valueOf(0), Double.valueOf(0));
+        Map<UUID, Position> movedElementIdToNewPositionMap = this.props.getMovedElementIdToNewPositionMap();
+        NodePositionProvider nodePositionProvider = new NodePositionProvider(Double.valueOf(0), Double.valueOf(0), movedElementIdToNewPositionMap);
         var optionalPreviousDiagram = this.props.getPreviousDiagram();
 
         String label = diagramDescription.getLabelProvider().apply(variableManager);

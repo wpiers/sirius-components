@@ -14,7 +14,9 @@ package org.eclipse.sirius.web.diagrams.components;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.eclipse.sirius.web.diagrams.Diagram;
 import org.eclipse.sirius.web.diagrams.Node;
@@ -33,6 +35,8 @@ public class NodePositionProvider {
 
     private Position lastPosition;
 
+    private Map<UUID, Position> movedElementIdToNewPositionMap;
+
     /**
      * Default constructor.
      *
@@ -48,6 +52,26 @@ public class NodePositionProvider {
           .y(y)
           .build();
         // @formatter:on
+        this.movedElementIdToNewPositionMap = Map.of();
+    }
+
+    /**
+     * Default constructor.
+     *
+     * @param x
+     *            the x coordinate of the new element starting position.
+     * @param y
+     *            the y coordinate of the new element starting position.
+     * @param movedElementIdToNewPositionMap
+     *            a map containing the new position of diagram elements (identified by their UUID)
+     */
+    public NodePositionProvider(double x, double y, Map<UUID, Position> movedElementIdToNewPositionMap) {
+        this(x, y);
+        this.movedElementIdToNewPositionMap = Map.copyOf(movedElementIdToNewPositionMap);
+    }
+
+    public Optional<Position> getMovedPosition(UUID elementId) {
+        return Optional.ofNullable(this.movedElementIdToNewPositionMap.get(elementId));
     }
 
     public Position getNextPosition(Optional<Object> previousParentElement) {

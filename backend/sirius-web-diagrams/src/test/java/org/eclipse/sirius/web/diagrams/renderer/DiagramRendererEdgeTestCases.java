@@ -88,7 +88,7 @@ public class DiagramRendererEdgeTestCases {
         // @formatter:on
 
         VariableManager variableManager = new VariableManager();
-        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, List.of(), Optional.empty());
+        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, List.of(), Optional.empty(), Map.of());
         Element element = new Element(DiagramComponent.class, props);
         Diagram diagram = new DiagramRenderer(this.logger).render(element);
 
@@ -135,7 +135,7 @@ public class DiagramRendererEdgeTestCases {
         // @formatter:on
 
         VariableManager variableManager = new VariableManager();
-        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, List.of(), Optional.empty());
+        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, List.of(), Optional.empty(), Map.of());
         Element element = new Element(DiagramComponent.class, props);
         Diagram diagram = new DiagramRenderer(this.logger).render(element);
 

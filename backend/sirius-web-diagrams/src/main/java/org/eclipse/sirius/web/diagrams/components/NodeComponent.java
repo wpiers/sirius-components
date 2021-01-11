@@ -125,19 +125,18 @@ public class NodeComponent implements IComponent {
         INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
         IDiagramElementRequestor diagramElementRequestor = new DiagramElementRequestor();
 
-        // @formatter:off
-        Position position = optionalPreviousNode
-                .map(Node::getPosition)
-                .orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getPreviousParentElement()));
+        Position position = this.getPosition(nodeId, optionalPreviousNode, nodePositionProvider);
 
+        //@formatter:off
         Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition()
                 .map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
-        var borderNodes = nodeDescription.getBorderNodeDescriptions().stream()
+        var borderNodes = nodeDescription.getBorderNodeDescriptions()
+                .stream()
                 .map(borderNodeDescription -> {
-                    List<Node> previousBorderNodes = optionalPreviousNode.map(previousNode -> diagramElementRequestor.getBorderNodes(previousNode, borderNodeDescription))
+                    List<Node> previousBorderNodes = optionalPreviousNode
+                            .map(previousNode -> diagramElementRequestor.getBorderNodes(previousNode, borderNodeDescription))
                             .orElse(List.of());
                     INodesRequestor borderNodesRequestor = new NodesRequestor(previousBorderNodes);
-                    //@formatter:off
                     var nodeComponentProps = NodeComponentProps.newNodeComponentProps()
                             .variableManager(nodeVariableManager)
                             .nodeDescription(borderNodeDescription)
@@ -150,11 +149,9 @@ public class NodeComponent implements IComponent {
                             .previousParentElement(optionalPreviousNode.map(Object.class::cast))
                             .optionalParentAbsolutePosition(absolutePosition)
                             .build();
-                    //@formatter:on
                     return new Element(NodeComponent.class, nodeComponentProps);
-
-                }).collect(Collectors.toList());
-        //@formatter:off
+                    })
+                .collect(Collectors.toList());
         var childNodes = nodeDescription.getChildNodeDescriptions()
                 .stream()
                 .map(childNodeDescription -> {
@@ -201,6 +198,21 @@ public class NodeComponent implements IComponent {
                 .build();
         // @formatter:on
         return new Element(NodeElementProps.TYPE, nodeElementProps);
+    }
+
+    private Position getPosition(UUID nodeId, Optional<Node> optionalPreviousNode, NodePositionProvider nodePositionProvider) {
+        // @formatter:off
+        return nodePositionProvider.getMovedPosition(nodeId)
+                .orElseGet(() -> this.getOrCreateNodePosition(optionalPreviousNode, nodePositionProvider));
+        // @formatter:on
+
+    }
+
+    private Position getOrCreateNodePosition(Optional<Node> optionalPreviousNode, NodePositionProvider nodePositionProvider) {
+        // @formatter:off
+        return optionalPreviousNode.map(Node::getPosition)
+                .orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getPreviousParentElement()));
+        // @formatter:on
     }
 
     private UUID computeNodeId(String targetObjectId) {
