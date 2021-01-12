@@ -46,7 +46,7 @@ public class DiagramComponent implements IComponent {
         VariableManager variableManager = this.props.getVariableManager();
         DiagramDescription diagramDescription = this.props.getDiagramDescription();
         Optional<Position> optionalNewNodeCreationPosition = this.props.getOptionalNewNodeCreationPosition();
-        NodePositionProvider nodePositionProvider = new NodePositionProvider(optionalNewNodeCreationPosition.map(Position::getX).orElse(Double.valueOf(0)),
+        NodePositionProvider nodePositionProvider = new NodePositionProvider(this.props.getPreviousDiagram(), optionalNewNodeCreationPosition.map(Position::getX).orElse(Double.valueOf(0)),
                 optionalNewNodeCreationPosition.map(Position::getY).orElse(Double.valueOf(0)));
         var optionalPreviousDiagram = this.props.getPreviousDiagram();
 
@@ -73,7 +73,8 @@ public class DiagramComponent implements IComponent {
                             .cache(cache)
                             .viewCreationRequests(this.props.getViewCreationRequests())
                             .nodePositionProvider(nodePositionProvider)
-                            .parentElementId(diagramId).build();
+                            .parentElementId(diagramId)
+                            .parentNode(Optional.empty()).build();
                   //@formatter:on
                     return new Element(NodeComponent.class, nodeComponentProps);
                 }).collect(Collectors.toList());

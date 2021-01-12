@@ -14,6 +14,8 @@ package org.eclipse.sirius.web.diagrams.components;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
+
 import org.eclipse.sirius.web.diagrams.Position;
 import org.junit.Test;
 
@@ -30,12 +32,12 @@ public class NodePositionProviderTestCases {
 
     @Test
     public void testNodePosition() {
-        NodePositionProvider nodePositionProvider = new NodePositionProvider(STARTX, STARTY);
-        Position nextPosition = nodePositionProvider.getNextPosition();
+        NodePositionProvider nodePositionProvider = new NodePositionProvider(null, STARTX, STARTY);
+        Position nextPosition = nodePositionProvider.getNextPosition(Optional.empty());
         assertThat(nextPosition).extracting(Position::getX).isEqualTo(Double.valueOf(STARTX));
         assertThat(nextPosition).extracting(Position::getY).isEqualTo(Double.valueOf(STARTY));
 
-        nextPosition = nodePositionProvider.getNextPosition();
+        nextPosition = nodePositionProvider.getNextPosition(Optional.empty());
         assertThat(nextPosition).extracting(Position::getX).isEqualTo(Double.valueOf(STARTX + 30));
         assertThat(nextPosition).extracting(Position::getY).isEqualTo(Double.valueOf(STARTY + 30));
     }

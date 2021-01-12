@@ -14,10 +14,12 @@ package org.eclipse.sirius.web.diagrams.components;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.sirius.web.annotations.Immutable;
 import org.eclipse.sirius.web.components.IProps;
+import org.eclipse.sirius.web.diagrams.Node;
 import org.eclipse.sirius.web.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.web.diagrams.description.NodeDescription;
 import org.eclipse.sirius.web.diagrams.renderer.DiagramRenderingCache;
@@ -46,6 +48,8 @@ public final class NodeComponentProps implements IProps {
     private UUID parentElementId;
 
     private NodePositionProvider nodePositionProvider;
+
+    private Optional<Node> parentNode;
 
     private NodeComponentProps() {
         // Prevent instantiation
@@ -87,6 +91,10 @@ public final class NodeComponentProps implements IProps {
         return this.nodePositionProvider;
     }
 
+    public Optional<Node> getParentNode() {
+        return this.parentNode;
+    }
+
     /**
      * The Builder to create a new {@link NodeComponentProps}.
      *
@@ -109,6 +117,8 @@ public final class NodeComponentProps implements IProps {
         private UUID parentElementId;
 
         private NodePositionProvider nodePositionProvider;
+
+        private Optional<Node> parentNode;
 
         public Builder variableManager(VariableManager variableManager) {
             this.variableManager = Objects.requireNonNull(variableManager);
@@ -150,6 +160,11 @@ public final class NodeComponentProps implements IProps {
             return this;
         }
 
+        public Builder parentNode(Optional<Node> parentNode) {
+            this.parentNode = Objects.requireNonNull(parentNode);
+            return this;
+        }
+
         NodeComponentProps build() {
             NodeComponentProps nodeComponentProps = new NodeComponentProps();
             nodeComponentProps.variableManager = Objects.requireNonNull(this.variableManager);
@@ -160,6 +175,7 @@ public final class NodeComponentProps implements IProps {
             nodeComponentProps.viewCreationRequests = Objects.requireNonNull(this.viewCreationRequests);
             nodeComponentProps.parentElementId = Objects.requireNonNull(this.parentElementId);
             nodeComponentProps.nodePositionProvider = Objects.requireNonNull(this.nodePositionProvider);
+            nodeComponentProps.parentNode = Objects.requireNonNull(this.parentNode);
             return nodeComponentProps;
         }
     }

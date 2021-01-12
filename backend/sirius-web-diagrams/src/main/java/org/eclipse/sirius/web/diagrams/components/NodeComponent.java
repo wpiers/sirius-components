@@ -137,6 +137,7 @@ public class NodeComponent implements IComponent {
                             .viewCreationRequests(this.props.getViewCreationRequests())
                             .parentElementId(nodeId)
                             .nodePositionProvider(nodePositionProvider)
+                            .parentNode(optionalPreviousNode)
                             .build();
                     //@formatter:on
                     return new Element(NodeComponent.class, nodeComponentProps);
@@ -157,6 +158,7 @@ public class NodeComponent implements IComponent {
                     .viewCreationRequests(this.props.getViewCreationRequests())
                     .parentElementId(nodeId)
                     .nodePositionProvider(nodePositionProvider)
+                    .parentNode(optionalPreviousNode)
                     .build();
             //@formatter:on
             return new Element(NodeComponent.class, nodeComponentProps);
@@ -177,7 +179,7 @@ public class NodeComponent implements IComponent {
                 .descriptionId(nodeDescription.getId())
                 .borderNode(containmentKind == NodeContainmentKind.BORDER_NODE)
                 .style(style)
-                .position(optionalPreviousNode.map(Node::getPosition).orElseGet(() -> nodePositionProvider.getNextPosition()))
+                .position(optionalPreviousNode.map(Node::getPosition).orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getParentNode())))
                 .size(optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize(nodeChildren)))
                 .children(nodeChildren)
                 .build();
