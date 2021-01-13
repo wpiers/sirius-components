@@ -14,8 +14,6 @@ package org.eclipse.sirius.web.diagrams.components;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.eclipse.sirius.web.diagrams.Size;
 import org.junit.Test;
 
@@ -29,7 +27,7 @@ public class NodeSizeProviderTestCases {
     @Test
     public void testNodeSize() {
         NodeSizeProvider nodeSizeProvider = new NodeSizeProvider();
-        Size size = nodeSizeProvider.getSize(List.of());
+        Size size = nodeSizeProvider.getSize();
         assertThat(size).extracting(Size::getHeight).isEqualTo(Double.valueOf(70));
         assertThat(size).extracting(Size::getWidth).isEqualTo(Double.valueOf(150));
     }

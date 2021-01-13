@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.eclipse.sirius.web.components.IProps;
 import org.eclipse.sirius.web.diagrams.Label;
+import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -33,13 +34,20 @@ public class LabelComponentProps implements IProps {
 
     private final Optional<Label> optionalPreviousLabel;
 
-    private final LabelBoundsProvider labelBoundsProvider;
+    private final NodeLabelBoundsProvider labelBoundsProvider;
 
-    public LabelComponentProps(VariableManager variableManager, LabelDescription labelDescription, Optional<Label> optionalPreviousLabel, LabelBoundsProvider labelBoundsProvider) {
+    private final String parentType;
+
+    private final Size parentSize;
+
+    public LabelComponentProps(VariableManager variableManager, LabelDescription labelDescription, Optional<Label> optionalPreviousLabel, NodeLabelBoundsProvider labelBoundsProvider, String parentType,
+            Size parentSize) {
         this.variableManager = Objects.requireNonNull(variableManager);
         this.labelDescription = Objects.requireNonNull(labelDescription);
         this.optionalPreviousLabel = Objects.requireNonNull(optionalPreviousLabel);
         this.labelBoundsProvider = Objects.requireNonNull(labelBoundsProvider);
+        this.parentType = Objects.requireNonNull(parentType);
+        this.parentSize = Objects.requireNonNull(parentSize);
     }
 
     public VariableManager getVariableManager() {
@@ -54,8 +62,16 @@ public class LabelComponentProps implements IProps {
         return this.optionalPreviousLabel;
     }
 
-    public LabelBoundsProvider getLabelBoundsProvider() {
+    public NodeLabelBoundsProvider getLabelBoundsProvider() {
         return this.labelBoundsProvider;
+    }
+
+    public String getParentType() {
+        return this.parentType;
+    }
+
+    public Size getParentSize() {
+        return this.parentSize;
     }
 
 }

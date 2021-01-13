@@ -101,7 +101,7 @@ public class EdgeComponent implements IComponent {
 
                             VariableManager labelVariableManager = edgeVariableManager.createChild();
                             labelVariableManager.put(LabelDescription.OWNER_ID, id);
-                            LabelBoundsProvider labelBoundsProvider = new LabelBoundsProvider();
+                            EdgeLabelBoundsProvider labelBoundsProvider = new EdgeLabelBoundsProvider();
                             Label beginLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getBeginLabelProvider(), Edge::getBeginLabel, labelBoundsProvider);
                             Label centerLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getCenterLabelProvider(), Edge::getCenterLabel, labelBoundsProvider);
                             Label endLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getEndLabelProvider(), Edge::getEndLabel, labelBoundsProvider);
@@ -140,7 +140,7 @@ public class EdgeComponent implements IComponent {
     }
 
     private Label getLabel(VariableManager labelVariableManager, Optional<Edge> optionalPreviousEdge, Function<VariableManager, Optional<Label>> labelProvider, Function<Edge, Label> labelGetter,
-            LabelBoundsProvider labelBoundsProvider) {
+            EdgeLabelBoundsProvider labelBoundsProvider) {
         Label label = labelProvider.apply(labelVariableManager).orElse(null);
         if (label != null) {
             Optional<Label> optionalPreviousLabel = optionalPreviousEdge.map(labelGetter);
@@ -149,7 +149,7 @@ public class EdgeComponent implements IComponent {
         return label;
     }
 
-    private Label getLayoutedLabel(Label label, Optional<Label> optionalPreviousLabel, LabelBoundsProvider labelBoundsProvider) {
+    private Label getLayoutedLabel(Label label, Optional<Label> optionalPreviousLabel, EdgeLabelBoundsProvider labelBoundsProvider) {
         //@formatter:off
        return Label.newLabel(label)
                 .position(optionalPreviousLabel.map(Label::getPosition).orElseGet(() -> labelBoundsProvider.getPosition()))

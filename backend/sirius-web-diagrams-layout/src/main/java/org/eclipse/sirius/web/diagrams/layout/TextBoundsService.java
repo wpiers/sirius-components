@@ -12,10 +12,6 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.diagrams.layout;
 
-import java.awt.Font;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,6 +22,7 @@ import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.LabelStyle;
 import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.Size;
+import org.eclipse.sirius.web.diagrams.TextBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,16 +35,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TextBoundsService {
-    /**
-     * Font used in backend & frontend to compute and draw diagram labels.
-     */
-    private static final String DEFAULT_LABEL_FONT_NAME = "Arial"; //$NON-NLS-1$
-
-    private static final AffineTransform AFFINE_TRANSFORM = new AffineTransform();
-
-    private static final FontRenderContext FONT_RENDER_CONTEXT = new FontRenderContext(AFFINE_TRANSFORM, true, true);
-
-    private static final int SPACE_FOR_ICON = 20;
 
     private final Logger logger = LoggerFactory.getLogger(TextBoundsService.class);
 
@@ -92,41 +79,7 @@ public class TextBoundsService {
     }
 
     public TextBounds getBounds(Label label) {
-        int fontStyle = Font.PLAIN;
-        LabelStyle labelStyle = label.getStyle();
-        if (labelStyle.isBold()) {
-            fontStyle = fontStyle | Font.BOLD;
-        }
-        if (labelStyle.isItalic()) {
-            fontStyle = fontStyle | Font.ITALIC;
-        }
-        Font font = new Font(DEFAULT_LABEL_FONT_NAME, fontStyle, label.getStyle().getFontSize());
-        Rectangle2D stringBounds = font.getStringBounds(label.getText(), FONT_RENDER_CONTEXT);
-        double width = stringBounds.getWidth();
-        double height = stringBounds.getHeight();
-
-        double iconWidth = 0;
-        double iconHeight = 0;
-        if (!label.getStyle().getIconURL().isEmpty()) {
-            iconWidth = SPACE_FOR_ICON;
-            if (height < iconWidth / 2) {
-                iconHeight = iconWidth / 2;
-            }
-        }
-
-        // @formatter:off
-        Size size = Size.newSize()
-                .width(width + iconWidth)
-                .height(height + iconHeight)
-                .build();
-
-        // Sprotty needs the inverse of the x and y for the alignment, so it's "0 - x" and "0 - y" on purpose
-        Position alignment = Position.newPosition()
-                .x(0 - stringBounds.getX() + iconWidth)
-                .y(0 - stringBounds.getY())
-                .build();
-        // @formatter:on
-
-        return new TextBounds(size, alignment);
+        return label.getStyle().computeBounds(label.getText());
     }
+
 }

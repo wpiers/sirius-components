@@ -12,9 +12,6 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.diagrams.components;
 
-import java.util.List;
-
-import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.diagrams.Size;
 
 /**
@@ -24,7 +21,7 @@ import org.eclipse.sirius.web.diagrams.Size;
  */
 public class NodeSizeProvider {
 
-    public Size getSize(List<Element> childElements) {
+    public Size getSize() {
         // @formatter:off
         return Size.newSize()
                 .width(150)

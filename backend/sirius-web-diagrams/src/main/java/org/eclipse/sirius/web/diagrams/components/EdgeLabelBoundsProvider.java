@@ -16,11 +16,11 @@ import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.Size;
 
 /**
- * Provides the bounds (Size and Position) to apply to a new Label.
+ * Provides the bounds (Size and Position) to apply to a new Edge Label.
  *
  * @author fbarbin
  */
-public class LabelBoundsProvider {
+public class EdgeLabelBoundsProvider {
 
     public Position getPosition() {
         return Position.UNDEFINED;

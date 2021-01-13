@@ -115,7 +115,7 @@ public class NodeComponent implements IComponent {
 
         LabelDescription labelDescription = nodeDescription.getLabelDescription();
         nodeVariableManager.put(LabelDescription.OWNER_ID, nodeId);
-        LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, new LabelBoundsProvider());
+        LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, new NodeLabelBoundsProvider(), type, nodeSizeProvider.getSize());
         Element labelElement = new Element(LabelComponent.class, labelComponentProps);
 
         INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
@@ -180,7 +180,7 @@ public class NodeComponent implements IComponent {
                 .borderNode(containmentKind == NodeContainmentKind.BORDER_NODE)
                 .style(style)
                 .position(optionalPreviousNode.map(Node::getPosition).orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getParentNode())))
-                .size(optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize(nodeChildren)))
+                .size(optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize()))
                 .children(nodeChildren)
                 .build();
         // @formatter:on
