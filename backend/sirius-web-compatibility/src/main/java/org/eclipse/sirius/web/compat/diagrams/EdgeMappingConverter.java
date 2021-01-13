@@ -29,10 +29,6 @@ import org.eclipse.sirius.web.compat.utils.SemanticCandidatesProvider;
 import org.eclipse.sirius.web.compat.utils.StringValueProvider;
 import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.diagrams.EdgeStyle;
-import org.eclipse.sirius.web.diagrams.Label;
-import org.eclipse.sirius.web.diagrams.LabelStyle;
-import org.eclipse.sirius.web.diagrams.Position;
-import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
 import org.eclipse.sirius.web.diagrams.description.LabelStyleDescription;
@@ -97,17 +93,14 @@ public class EdgeMappingConverter {
         LabelStyleDescriptionConverter labelStyleDescriptionConverter = new LabelStyleDescriptionConverter(this.interpreter, this.objectService);
 
         // @formatter:off
-        Function<VariableManager, Optional<Label>> beginLabelProvider = Optional.ofNullable(edgeMapping.getStyle())
-                .map(edgeStyle -> this.createLabelProvider(labelStyleDescriptionConverter, edgeStyle.getBeginLabelStyleDescription(), "_beginlabel")) //$NON-NLS-1$
-                .orElse(variableManager -> Optional.empty());
+        Optional<LabelDescription> optionalBeginLabelDescription = Optional.ofNullable(edgeMapping.getStyle())
+                .flatMap(edgeStyle -> this.createLabelDescription(labelStyleDescriptionConverter, edgeStyle.getBeginLabelStyleDescription(), "_beginlabel", edgeMapping)); //$NON-NLS-1$
 
-        Function<VariableManager, Optional<Label>> centerLabelProvider = Optional.ofNullable(edgeMapping.getStyle())
-                .map(edgeStyle -> this.createLabelProvider(labelStyleDescriptionConverter, edgeStyle.getCenterLabelStyleDescription(), "_centerlabel")) //$NON-NLS-1$
-                .orElse(variableManager -> Optional.empty());
+        Optional<LabelDescription> optionalCenterLabelDescription = Optional.ofNullable(edgeMapping.getStyle())
+                .flatMap(edgeStyle -> this.createLabelDescription(labelStyleDescriptionConverter, edgeStyle.getCenterLabelStyleDescription(), "_centerlabel", edgeMapping)); //$NON-NLS-1$
 
-        Function<VariableManager, Optional<Label>> endLabelProvider = Optional.ofNullable(edgeMapping.getStyle())
-                .map(edgeStyle -> this.createLabelProvider(labelStyleDescriptionConverter, edgeStyle.getEndLabelStyleDescription(), "_endlabel")) //$NON-NLS-1$
-                .orElse(variableManager -> Optional.empty());
+        Optional<LabelDescription> optionalEndLabelDescription = Optional.ofNullable(edgeMapping.getStyle())
+                .flatMap(edgeStyle -> this.createLabelDescription(labelStyleDescriptionConverter, edgeStyle.getEndLabelStyleDescription(), "_endlabel", edgeMapping)); //$NON-NLS-1$
 
         ToolConverter toolConverter = new ToolConverter(this.interpreter, this.editService);
         var deleteHandler = toolConverter.createDeleteToolHandler(edgeMapping.getDeletionDescription());
@@ -117,9 +110,9 @@ public class EdgeMappingConverter {
                 .targetObjectKindProvider(targetKindProvider)
                 .targetObjectLabelProvider(targetLabelProvider)
                 .semanticElementsProvider(semanticElementsProvider)
-                .beginLabelProvider(beginLabelProvider)
-                .centerLabelProvider(centerLabelProvider)
-                .endLabelProvider(endLabelProvider)
+                .optionalBeginLabelDescription(optionalBeginLabelDescription)
+                .optionalCenterLabelDescription(optionalCenterLabelDescription)
+                .optionalEndLabelDescription(optionalEndLabelDescription)
                 .sourceNodeDescriptions(sourceNodeDescriptions)
                 .targetNodeDescriptions(targetNodeDescriptions)
                 .sourceNodesProvider(sourceNodesProvider)
@@ -130,38 +123,28 @@ public class EdgeMappingConverter {
         // @formatter:on
     }
 
-    private Function<VariableManager, Optional<Label>> createLabelProvider(LabelStyleDescriptionConverter labelStyleDescriptionConverter, BasicLabelStyleDescription siriusBasicLabelStyleDescription,
-            String idSuffix) {
-        return variableManager -> {
-            return Optional.ofNullable(siriusBasicLabelStyleDescription).map(siriusLabelStyleDescription -> {
-                UUID ownerId = variableManager.get(LabelDescription.OWNER_ID, UUID.class).orElse(null);
+    private Optional<LabelDescription> createLabelDescription(LabelStyleDescriptionConverter labelStyleDescriptionConverter, BasicLabelStyleDescription siriusBasicLabelStyleDescription,
+            String idSuffix, EdgeMapping edgeMapping) {
+        return Optional.ofNullable(siriusBasicLabelStyleDescription).map(siriusLabelStyleDescription -> {
+            String labelExpression = Optional.ofNullable(siriusLabelStyleDescription).map(BasicLabelStyleDescription::getLabelExpression).orElse(""); //$NON-NLS-1$
+            LabelStyleDescription labelStyleDescription = labelStyleDescriptionConverter.convert(siriusLabelStyleDescription);
 
-                String labelId = ownerId.toString() + idSuffix;
-                String labelExpression = Optional.ofNullable(siriusLabelStyleDescription).map(BasicLabelStyleDescription::getLabelExpression).orElse(""); //$NON-NLS-1$
-                LabelStyleDescription labelStyleDescription = labelStyleDescriptionConverter.convert(siriusLabelStyleDescription);
+            Function<VariableManager, String> labelIdProvider = variableManager -> {
+                Object parentId = variableManager.getVariables().get(LabelDescription.OWNER_ID);
+                return String.valueOf(parentId) + LabelDescription.LABEL_SUFFIX;
+            };
 
-                // @formatter:off
-                LabelStyle style = LabelStyle.newLabelStyle()
-                        .color(labelStyleDescription.getColorProvider().apply(variableManager))
-                        .fontSize(labelStyleDescription.getFontSizeProvider().apply(variableManager))
-                        .bold(labelStyleDescription.getBoldProvider().apply(variableManager))
-                        .italic(labelStyleDescription.getItalicProvider().apply(variableManager))
-                        .strikeThrough(labelStyleDescription.getStrikeThroughProvider().apply(variableManager))
-                        .underline(labelStyleDescription.getUnderlineProvider().apply(variableManager))
-                        .iconURL(labelStyleDescription.getIconURLProvider().apply(variableManager))
-                        .build();
+            String id = this.identifierProvider.getIdentifier(edgeMapping) + idSuffix;
+            StringValueProvider textProvider = new StringValueProvider(this.interpreter, labelExpression);
+            // @formatter:off
+            return LabelDescription.newLabelDescription(id)
+                    .idProvider(labelIdProvider)
+                    .textProvider(textProvider)
+                    .styleDescription(labelStyleDescription)
+                    .build();
+            // @formatter:on
 
-                return Label.newLabel(labelId)
-                        .type("label:inside-center") //$NON-NLS-1$
-                        .text(new StringValueProvider(this.interpreter, labelExpression).apply(variableManager))
-                        .position(Position.UNDEFINED)
-                        .size(Size.UNDEFINED)
-                        .alignment(Position.UNDEFINED)
-                        .style(style)
-                        .build();
-                // @formatter:on
-            });
-        };
+        });
     }
 
     /**

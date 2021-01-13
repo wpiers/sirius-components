@@ -10,6 +10,19 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
+import { edgeCreationFeedback } from 'diagram/sprotty/edgeCreationFeedback';
+import { GraphFactory } from 'diagram/sprotty/GraphFactory';
+import { DiagramView } from 'diagram/sprotty/views/DiagramView';
+import { EdgeView } from 'diagram/sprotty/views/EdgeView';
+import { ImageView } from 'diagram/sprotty/views/ImageView';
+import { LabelView } from 'diagram/sprotty/views/LabelView';
+import { RectangleView } from 'diagram/sprotty/views/RectangleView';
+import {
+  ACTIVE_TOOL_ACTION,
+  HIDE_CONTEXTUAL_TOOLBAR_ACTION,
+  SiriusWebWebSocketDiagramServer,
+  SPROTTY_DELETE_ACTION,
+} from 'diagram/sprotty/WebSocketDiagramServer';
 import { Container, ContainerModule, decorate, inject } from 'inversify';
 import {
   boundsModule,
@@ -18,9 +31,9 @@ import {
   configureViewerOptions,
   ConsoleLogger,
   defaultModule,
-  EditLabelAction,
   edgeEditModule,
   edgeLayoutModule,
+  EditLabelAction,
   editLabelFeature,
   exportModule,
   fadeModule,
@@ -32,12 +45,16 @@ import {
   labelEditUiModule,
   LogLevel,
   modelSourceModule,
+  MouseListener,
   moveModule,
+  overrideCommandStackOptions,
   overrideViewerOptions,
   PreRenderedView,
+  RequestPopupModelAction,
   routingModule,
   SCompartmentView,
   selectModule,
+  SetPopupModelAction,
   SLabel,
   SNode,
   SRoutingHandleView,
@@ -46,25 +63,7 @@ import {
   viewportModule,
   withEditLabelFeature,
   zorderModule,
-  MouseListener,
-  SetPopupModelAction,
-  RequestPopupModelAction,
-  overrideCommandStackOptions,
 } from 'sprotty';
-
-import { GraphFactory } from 'diagram/sprotty/GraphFactory';
-import { DiagramView } from 'diagram/sprotty/views/DiagramView';
-import { EdgeView } from 'diagram/sprotty/views/EdgeView';
-import { ImageView } from 'diagram/sprotty/views/ImageView';
-import { LabelView } from 'diagram/sprotty/views/LabelView';
-import { RectangleView } from 'diagram/sprotty/views/RectangleView';
-import {
-  SiriusWebWebSocketDiagramServer,
-  SPROTTY_DELETE_ACTION,
-  HIDE_CONTEXTUAL_TOOLBAR_ACTION,
-  ACTIVE_TOOL_ACTION,
-} from 'diagram/sprotty/WebSocketDiagramServer';
-import { edgeCreationFeedback } from 'diagram/sprotty/edgeCreationFeedback';
 
 const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, rebind) => {
   rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
@@ -95,6 +94,18 @@ const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, reb
   configureView({ bind, isBound }, 'label:inside-left', LabelView);
   // @ts-ignore
   configureModelElement(context, 'label:inside-center', SLabel, LabelView, {
+    enable: [editLabelFeature],
+  });
+  // @ts-ignore
+  configureModelElement(context, 'label:edge-begin', SLabel, LabelView, {
+    enable: [editLabelFeature],
+  });
+  // @ts-ignore
+  configureModelElement(context, 'label:edge-center', SLabel, LabelView, {
+    enable: [editLabelFeature],
+  });
+  // @ts-ignore
+  configureModelElement(context, 'label:edge-end', SLabel, LabelView, {
     enable: [editLabelFeature],
   });
   // @ts-ignore

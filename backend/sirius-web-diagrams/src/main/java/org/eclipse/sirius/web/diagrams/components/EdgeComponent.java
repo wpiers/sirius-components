@@ -27,6 +27,7 @@ import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.diagrams.Edge;
 import org.eclipse.sirius.web.diagrams.EdgeStyle;
 import org.eclipse.sirius.web.diagrams.Label;
+import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.web.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
@@ -99,30 +100,28 @@ public class EdgeComponent implements IComponent {
 
                             EdgeStyle style = edgeDescription.getStyleProvider().apply(edgeVariableManager);
 
-                            VariableManager labelVariableManager = edgeVariableManager.createChild();
-                            labelVariableManager.put(LabelDescription.OWNER_ID, id);
-                            LabelBoundsProvider labelBoundsProvider = new LabelBoundsProvider();
-                            Label beginLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getBeginLabelProvider(), Edge::getBeginLabel, labelBoundsProvider);
-                            Label centerLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getCenterLabelProvider(), Edge::getCenterLabel, labelBoundsProvider);
-                            Label endLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getEndLabelProvider(), Edge::getEndLabel, labelBoundsProvider);
-
                             UUID sourceId = this.getId(sourceNode);
                             UUID targetId = this.getId(targetNode);
 
                             // @formatter:off
+                            String edgeType = optionalPreviousEdge
+                                    .map(Edge::getType)
+                                    .orElse("edge:straight"); //$NON-NLS-1$
+                            List<Position> routingPoints = optionalPreviousEdge
+                                    .map(Edge::getRoutingPoints)
+                                    .orElseGet(()-> edgeRoutingPointsProvider.getRoutingPoints(sourceNode, targetNode));
+                            List<Element> edgeChildren = this.getLabelsChildren(edgeDescription, edgeVariableManager, optionalPreviousEdge, id);
                             EdgeElementProps edgeElementProps = EdgeElementProps.newEdgeElementProps(id)
-                                    .type(optionalPreviousEdge.map(Edge::getType).orElse("edge:straight")) //$NON-NLS-1$
+                                    .type(edgeType)
                                     .descriptionId(edgeDescription.getId())
-                                    .beginLabel(beginLabel)
-                                    .centerLabel(centerLabel)
-                                    .endLabel(endLabel)
                                     .targetObjectId(targetObjectId)
                                     .targetObjectKind(targetObjectKind)
                                     .targetObjectLabel(targetObjectLabel)
                                     .sourceId(sourceId)
                                     .targetId(targetId)
                                     .style(style)
-                                    .routingPoints(optionalPreviousEdge.map(Edge::getRoutingPoints).orElseGet(()-> edgeRoutingPointsProvider.getRoutingPoints(sourceNode, targetNode)))
+                                    .routingPoints(routingPoints)
+                                    .children(edgeChildren)
                                     .build();
                             // @formatter:on
 
@@ -139,24 +138,30 @@ public class EdgeComponent implements IComponent {
         return new Fragment(fragmentProps);
     }
 
-    private Label getLabel(VariableManager labelVariableManager, Optional<Edge> optionalPreviousEdge, Function<VariableManager, Optional<Label>> labelProvider, Function<Edge, Label> labelGetter,
-            LabelBoundsProvider labelBoundsProvider) {
-        Label label = labelProvider.apply(labelVariableManager).orElse(null);
-        if (label != null) {
-            Optional<Label> optionalPreviousLabel = optionalPreviousEdge.map(labelGetter);
-            label = this.getLayoutedLabel(label, optionalPreviousLabel, labelBoundsProvider);
-        }
-        return label;
+    private List<Element> getLabelsChildren(EdgeDescription edgeDescription, VariableManager edgeVariableManager, Optional<Edge> optionalPreviousEdge, UUID edgeId) {
+        List<Element> edgeChildren = new ArrayList<>();
+        VariableManager labelVariableManager = edgeVariableManager.createChild();
+        labelVariableManager.put(LabelDescription.OWNER_ID, edgeId);
+        LabelBoundsProvider labelBoundsProvider = new LabelBoundsProvider();
+        Optional<Element> beginLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getOptionalBeginLabelDescription(), Edge::getBeginLabel, labelBoundsProvider,
+                LabelPlacementKind.EDGE_BEGIN.getValue());
+        Optional<Element> centerLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getOptionalCenterLabelDescription(), Edge::getCenterLabel, labelBoundsProvider,
+                LabelPlacementKind.EDGE_CENTER.getValue());
+        Optional<Element> endLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getOptionalEndLabelDescription(), Edge::getEndLabel, labelBoundsProvider,
+                LabelPlacementKind.EDGE_END.getValue());
+        beginLabel.ifPresent(label -> edgeChildren.add(label));
+        centerLabel.ifPresent(label -> edgeChildren.add(label));
+        endLabel.ifPresent(label -> edgeChildren.add(label));
+        return edgeChildren;
     }
 
-    private Label getLayoutedLabel(Label label, Optional<Label> optionalPreviousLabel, LabelBoundsProvider labelBoundsProvider) {
-        //@formatter:off
-       return Label.newLabel(label)
-                .position(optionalPreviousLabel.map(Label::getPosition).orElseGet(() -> labelBoundsProvider.getPosition()))
-                .size(optionalPreviousLabel.map(Label::getSize).orElseGet(() -> labelBoundsProvider.getSize()))
-                .alignment(optionalPreviousLabel.map(Label::getAlignment).orElseGet(() -> labelBoundsProvider.getAlignment()))
-                .build();
-       //@formatter:on
+    private Optional<Element> getLabel(VariableManager labelVariableManager, Optional<Edge> optionalPreviousEdge, Optional<LabelDescription> optionalLabelDescription,
+            Function<Edge, Label> labelGetter, LabelBoundsProvider labelBoundsProvider, String type) {
+        Optional<Label> optionalPreviousLabel = optionalPreviousEdge.map(labelGetter);
+        return optionalLabelDescription.map(labelDescription -> {
+            LabelComponentProps labelComponentProps = new LabelComponentProps(labelVariableManager, labelDescription, optionalPreviousLabel, labelBoundsProvider, type);
+            return new Element(LabelComponent.class, labelComponentProps);
+        });
     }
 
     private UUID computeEdgeId(Element sourceNode, Element targetNode, int count) {

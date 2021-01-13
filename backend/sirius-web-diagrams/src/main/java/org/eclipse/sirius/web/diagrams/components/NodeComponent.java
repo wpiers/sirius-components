@@ -26,6 +26,8 @@ import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.diagrams.INodeStyle;
 import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.Node;
+import org.eclipse.sirius.web.diagrams.Position;
+import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
 import org.eclipse.sirius.web.diagrams.description.NodeDescription;
 import org.eclipse.sirius.web.diagrams.description.SynchronizationPolicy;
@@ -115,7 +117,8 @@ public class NodeComponent implements IComponent {
 
         LabelDescription labelDescription = nodeDescription.getLabelDescription();
         nodeVariableManager.put(LabelDescription.OWNER_ID, nodeId);
-        LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, new LabelBoundsProvider());
+        LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, new LabelBoundsProvider(),
+                LabelPlacementKind.INSIDE_CENTER.getValue());
         Element labelElement = new Element(LabelComponent.class, labelComponentProps);
 
         INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
@@ -171,6 +174,12 @@ public class NodeComponent implements IComponent {
         nodeChildren.addAll(childNodes);
 
         // @formatter:off
+        Position position = optionalPreviousNode
+                .map(Node::getPosition)
+                .orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getParentNode()));
+        Size size = optionalPreviousNode
+                .map(Node::getSize)
+                .orElseGet(() -> nodeSizeProvider.getSize(nodeChildren));
         NodeElementProps nodeElementProps = NodeElementProps.newNodeElementProps(nodeId)
                 .type(type)
                 .targetObjectId(targetObjectId)
@@ -179,8 +188,8 @@ public class NodeComponent implements IComponent {
                 .descriptionId(nodeDescription.getId())
                 .borderNode(containmentKind == NodeContainmentKind.BORDER_NODE)
                 .style(style)
-                .position(optionalPreviousNode.map(Node::getPosition).orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getParentNode())))
-                .size(optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize(nodeChildren)))
+                .position(position)
+                .size(size)
                 .children(nodeChildren)
                 .build();
         // @formatter:on
