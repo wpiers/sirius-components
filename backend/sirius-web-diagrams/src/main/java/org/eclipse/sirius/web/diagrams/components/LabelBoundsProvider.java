@@ -12,26 +12,63 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.diagrams.components;
 
+import org.eclipse.sirius.web.diagrams.NodeType;
 import org.eclipse.sirius.web.diagrams.Position;
+import org.eclipse.sirius.web.diagrams.Position.Builder;
 import org.eclipse.sirius.web.diagrams.Size;
+import org.eclipse.sirius.web.diagrams.TextBounds;
 
 /**
- * Provides the bounds (Size and Position) to apply to a new Label.
+ * Provides the bounds (Alignment, Size and Position) to apply to a new Label.
  *
- * @author fbarbin
+ * @author wpiers
  */
 public class LabelBoundsProvider {
 
-    public Position getPosition() {
-        return Position.UNDEFINED;
+    /** The Spacing between a label and the element to describe. */
+    private static final int LABEL_Y_SPACING = 5;
+
+    private String parentNodeType;
+
+    private Size parentNodeSize;
+
+    /**
+     * Constructor for an edge.
+     */
+    public LabelBoundsProvider() {
     }
 
-    public Position getAlignment() {
-        return Position.UNDEFINED;
+    /**
+     * Constructor for a node.
+     */
+    public LabelBoundsProvider(String parentType, Size parentSize) {
+        this.parentNodeType = parentType;
+        this.parentNodeSize = parentSize;
     }
 
-    public Size getSize() {
-        return Size.UNDEFINED;
+    public Position getPosition(TextBounds textBounds, String type) {
+        if (this.parentNodeType == null) {
+            return Position.UNDEFINED;
+        }
+        // TODO manage other placements than CENTER
+        double x = (this.parentNodeSize.getWidth() - textBounds.getSize().getWidth()) / 2;
+        Builder builder = Position.newPosition().x(x);
+        if (NodeType.NODE_IMAGE.equals(this.parentNodeType)) {
+            builder.y(-(textBounds.getSize().getHeight() + LABEL_Y_SPACING));
+        } else if (NodeType.NODE_RECTANGLE.equals(this.parentNodeType)) {
+            builder.y(LABEL_Y_SPACING);
+        } else {
+            builder.y(0);
+        }
+        return builder.build();
+    }
+
+    public Position getAlignment(TextBounds textBounds, String type) {
+        return textBounds.getAlignment();
+    }
+
+    public Size getSize(TextBounds textBounds, String type) {
+        return textBounds.getSize();
     }
 
 }

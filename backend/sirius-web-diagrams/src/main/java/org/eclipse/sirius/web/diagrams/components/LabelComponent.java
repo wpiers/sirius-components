@@ -21,6 +21,7 @@ import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.LabelStyle;
 import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.Size;
+import org.eclipse.sirius.web.diagrams.TextBounds;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
 import org.eclipse.sirius.web.diagrams.description.LabelStyleDescription;
 import org.eclipse.sirius.web.diagrams.elements.LabelElementProps;
@@ -73,15 +74,17 @@ public class LabelComponent implements IComponent {
         // @formatter:on
 
         // @formatter:off
+        TextBounds textBounds = labelStyle.computeBounds(text);
+
         Position position = optionalPreviousLabel
                 .map(Label::getPosition)
-                .orElse(labelBoundsProvider.getPosition());
+                .orElse(labelBoundsProvider.getPosition(textBounds, type));
         Size size = optionalPreviousLabel
                 .map(Label::getSize)
-                .orElse(labelBoundsProvider.getSize());
+                .orElse(labelBoundsProvider.getSize(textBounds, type));
         Position alignment = optionalPreviousLabel
                 .map(Label::getAlignment)
-                .orElse(labelBoundsProvider.getAlignment());
+                .orElse(labelBoundsProvider.getAlignment(textBounds, type));
         LabelElementProps labelElementProps = LabelElementProps.newLabelElementProps(id)
                 .type(type)
                 .text(text)
