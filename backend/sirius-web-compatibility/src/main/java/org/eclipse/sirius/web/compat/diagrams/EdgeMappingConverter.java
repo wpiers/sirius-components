@@ -104,7 +104,7 @@ public class EdgeMappingConverter {
                 .map(labelDescription -> this.createLabelDescription(labelStyleDescriptionConverter, labelDescription,  "_centerlabel", edgeMapping)); //$NON-NLS-1$
 
         Optional<LabelDescription> optionalEndLabelDescription = Optional.ofNullable(edgeMapping.getStyle())
-                .map(EdgeStyleDescription::getCenterLabelStyleDescription)
+                .map(EdgeStyleDescription::getEndLabelStyleDescription)
                 .map(labelDescription -> this.createLabelDescription(labelStyleDescriptionConverter, labelDescription,  "_endlabel", edgeMapping)); //$NON-NLS-1$
 
         ToolConverter toolConverter = new ToolConverter(this.interpreter, this.editService);
