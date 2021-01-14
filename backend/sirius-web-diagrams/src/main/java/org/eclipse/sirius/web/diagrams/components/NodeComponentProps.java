@@ -178,7 +178,7 @@ public final class NodeComponentProps implements IProps {
             return this;
         }
 
-        NodeComponentProps build() {
+        public NodeComponentProps build() {
             NodeComponentProps nodeComponentProps = new NodeComponentProps();
             nodeComponentProps.variableManager = Objects.requireNonNull(this.variableManager);
             nodeComponentProps.nodeDescription = Objects.requireNonNull(this.nodeDescription);

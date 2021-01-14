@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import org.eclipse.sirius.web.components.IProps;
 import org.eclipse.sirius.web.diagrams.Diagram;
-import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.web.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.web.representations.VariableManager;
@@ -37,15 +36,11 @@ public class DiagramComponentProps implements IProps {
 
     private final List<ViewCreationRequest> viewCreationRequests;
 
-    private final Optional<Position> optionalNewNodeCreationPosition;
-
-    public DiagramComponentProps(VariableManager variableManager, DiagramDescription diagramDescription, List<ViewCreationRequest> viewCreationRequests, Optional<Diagram> previousDiagram,
-            Optional<Position> optionalNewNodeCreationPosition) {
+    public DiagramComponentProps(VariableManager variableManager, DiagramDescription diagramDescription, List<ViewCreationRequest> viewCreationRequests, Optional<Diagram> previousDiagram) {
         this.variableManager = Objects.requireNonNull(variableManager);
         this.diagramDescription = Objects.requireNonNull(diagramDescription);
         this.previousDiagram = Objects.requireNonNull(previousDiagram);
         this.viewCreationRequests = List.copyOf(Objects.requireNonNull(viewCreationRequests));
-        this.optionalNewNodeCreationPosition = Objects.requireNonNull(optionalNewNodeCreationPosition);
     }
 
     public VariableManager getVariableManager() {
@@ -62,9 +57,5 @@ public class DiagramComponentProps implements IProps {
 
     public List<ViewCreationRequest> getViewCreationRequests() {
         return this.viewCreationRequests;
-    }
-
-    public Optional<Position> getOptionalNewNodeCreationPosition() {
-        return this.optionalNewNodeCreationPosition;
     }
 }

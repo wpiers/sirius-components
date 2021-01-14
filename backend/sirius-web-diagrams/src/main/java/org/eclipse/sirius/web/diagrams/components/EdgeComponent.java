@@ -143,11 +143,11 @@ public class EdgeComponent implements IComponent {
         VariableManager labelVariableManager = edgeVariableManager.createChild();
         labelVariableManager.put(LabelDescription.OWNER_ID, edgeId);
         LabelBoundsProvider labelBoundsProvider = new LabelBoundsProvider();
-        Optional<Element> beginLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getOptionalBeginLabelDescription(), Edge::getBeginLabel, labelBoundsProvider,
-                LabelPlacementKind.EDGE_BEGIN.getValue());
-        Optional<Element> centerLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getOptionalCenterLabelDescription(), Edge::getCenterLabel, labelBoundsProvider,
-                LabelPlacementKind.EDGE_CENTER.getValue());
-        Optional<Element> endLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, edgeDescription.getOptionalEndLabelDescription(), Edge::getEndLabel, labelBoundsProvider,
+        Optional<Element> beginLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, Optional.ofNullable(edgeDescription.getBeginLabelDescription()), Edge::getBeginLabel,
+                labelBoundsProvider, LabelPlacementKind.EDGE_BEGIN.getValue());
+        Optional<Element> centerLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, Optional.ofNullable(edgeDescription.getCenterLabelDescription()), Edge::getCenterLabel,
+                labelBoundsProvider, LabelPlacementKind.EDGE_CENTER.getValue());
+        Optional<Element> endLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, Optional.ofNullable(edgeDescription.getEndLabelDescription()), Edge::getEndLabel, labelBoundsProvider,
                 LabelPlacementKind.EDGE_END.getValue());
         beginLabel.ifPresent(label -> edgeChildren.add(label));
         centerLabel.ifPresent(label -> edgeChildren.add(label));

@@ -17,7 +17,6 @@ import java.util.Optional;
 import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramContext;
 import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramCreationService;
 import org.eclipse.sirius.web.diagrams.Diagram;
-import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.web.services.api.objects.IEditingContext;
 
@@ -34,7 +33,7 @@ public class NoOpDiagramCreationService implements IDiagramCreationService {
     }
 
     @Override
-    public Optional<Diagram> refresh(IEditingContext editingContext, IDiagramContext diagramContext, Optional<Position> optionalNewNodeCreationPosition) {
+    public Optional<Diagram> refresh(IEditingContext editingContext, IDiagramContext diagramContext) {
         return Optional.empty();
     }
 

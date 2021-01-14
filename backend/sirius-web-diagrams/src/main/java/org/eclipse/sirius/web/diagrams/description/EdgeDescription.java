@@ -15,7 +15,6 @@ package org.eclipse.sirius.web.diagrams.description;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -45,11 +44,11 @@ public final class EdgeDescription {
 
     private Function<VariableManager, List<Object>> semanticElementsProvider;
 
-    private Optional<LabelDescription> optionalBeginLabelDescription;
+    private LabelDescription beginLabelDescription;
 
-    private Optional<LabelDescription> optionalCenterLabelDescription;
+    private LabelDescription centerLabelDescription;
 
-    private Optional<LabelDescription> optionalEndLabelDescription;
+    private LabelDescription endLabelDescription;
 
     private List<NodeDescription> sourceNodeDescriptions;
 
@@ -91,16 +90,16 @@ public final class EdgeDescription {
         return this.semanticElementsProvider;
     }
 
-    public Optional<LabelDescription> getOptionalBeginLabelDescription() {
-        return this.optionalBeginLabelDescription;
+    public LabelDescription getBeginLabelDescription() {
+        return this.beginLabelDescription;
     }
 
-    public Optional<LabelDescription> getOptionalCenterLabelDescription() {
-        return this.optionalCenterLabelDescription;
+    public LabelDescription getCenterLabelDescription() {
+        return this.centerLabelDescription;
     }
 
-    public Optional<LabelDescription> getOptionalEndLabelDescription() {
-        return this.optionalEndLabelDescription;
+    public LabelDescription getEndLabelDescription() {
+        return this.endLabelDescription;
     }
 
     public List<NodeDescription> getSourceNodeDescriptions() {
@@ -156,11 +155,11 @@ public final class EdgeDescription {
 
         private Function<VariableManager, List<Object>> semanticElementsProvider;
 
-        private Optional<LabelDescription> optionalBeginLabelDescription;
+        private LabelDescription beginLabelDescription;
 
-        private Optional<LabelDescription> optionalCenterLabelDescription;
+        private LabelDescription centerLabelDescription;
 
-        private Optional<LabelDescription> optionalEndLabelDescription;
+        private LabelDescription endLabelDescription;
 
         private List<NodeDescription> sourceNodeDescriptions;
 
@@ -203,18 +202,18 @@ public final class EdgeDescription {
             return this;
         }
 
-        public Builder optionalBeginLabelDescription(Optional<LabelDescription> optionalBeginLabelDescription) {
-            this.optionalBeginLabelDescription = Objects.requireNonNull(optionalBeginLabelDescription);
+        public Builder beginLabelDescription(LabelDescription beginLabelDescription) {
+            this.beginLabelDescription = Objects.requireNonNull(beginLabelDescription);
             return this;
         }
 
-        public Builder optionalCenterLabelDescription(Optional<LabelDescription> optionalCenterLabelDescription) {
-            this.optionalCenterLabelDescription = Objects.requireNonNull(optionalCenterLabelDescription);
+        public Builder centerLabelDescription(LabelDescription centerLabelDescription) {
+            this.centerLabelDescription = Objects.requireNonNull(centerLabelDescription);
             return this;
         }
 
-        public Builder optionalEndLabelDescription(Optional<LabelDescription> optionalEndLabelDescription) {
-            this.optionalEndLabelDescription = Objects.requireNonNull(optionalEndLabelDescription);
+        public Builder endLabelDescription(LabelDescription endLabelDescription) {
+            this.endLabelDescription = Objects.requireNonNull(endLabelDescription);
             return this;
         }
 
@@ -259,9 +258,9 @@ public final class EdgeDescription {
             edgeDescription.sourceNodeDescriptions = Objects.requireNonNull(this.sourceNodeDescriptions);
             edgeDescription.targetNodeDescriptions = Objects.requireNonNull(this.targetNodeDescriptions);
             edgeDescription.semanticElementsProvider = Objects.requireNonNull(this.semanticElementsProvider);
-            edgeDescription.optionalBeginLabelDescription = Objects.requireNonNull(this.optionalBeginLabelDescription);
-            edgeDescription.optionalCenterLabelDescription = Objects.requireNonNull(this.optionalCenterLabelDescription);
-            edgeDescription.optionalEndLabelDescription = Objects.requireNonNull(this.optionalEndLabelDescription);
+            edgeDescription.beginLabelDescription = this.beginLabelDescription;
+            edgeDescription.centerLabelDescription = this.centerLabelDescription;
+            edgeDescription.endLabelDescription = this.endLabelDescription;
             edgeDescription.sourceNodesProvider = Objects.requireNonNull(this.sourceNodesProvider);
             edgeDescription.targetNodesProvider = Objects.requireNonNull(this.targetNodesProvider);
             edgeDescription.styleProvider = Objects.requireNonNull(this.styleProvider);

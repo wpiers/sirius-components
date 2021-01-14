@@ -15,7 +15,6 @@ package org.eclipse.sirius.web.collaborative.diagrams.api;
 import java.util.Optional;
 
 import org.eclipse.sirius.web.diagrams.Diagram;
-import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.web.services.api.objects.IEditingContext;
 
@@ -54,10 +53,8 @@ public interface IDiagramCreationService {
      *            The editing context
      * @param diagramContext
      *            The diagram context
-     * @param optionalNewNodeCreationPosition
-     *            the optional Position to specify the location where new elements should be created.
      * @return An updated diagram if we have been able to refresh it.
      */
-    Optional<Diagram> refresh(IEditingContext editingContext, IDiagramContext diagramContext, Optional<Position> optionalNewNodeCreationPosition);
+    Optional<Diagram> refresh(IEditingContext editingContext, IDiagramContext diagramContext);
 
 }

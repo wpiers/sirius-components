@@ -154,12 +154,14 @@ public class NodeComponent implements IComponent {
                     return new Element(NodeComponent.class, nodeComponentProps);
 
                 }).collect(Collectors.toList());
-
-        var childNodes = nodeDescription.getChildNodeDescriptions().stream().map(childNodeDescription -> {
-            List<Node> previousChildNodes = optionalPreviousNode.map(previousNode -> diagramElementRequestor.getChildNodes(previousNode, childNodeDescription)).orElse(List.of());
+        //@formatter:off
+        var childNodes = nodeDescription.getChildNodeDescriptions()
+                .stream()
+                .map(childNodeDescription -> {
+            List<Node> previousChildNodes = optionalPreviousNode
+                    .map(previousNode -> diagramElementRequestor.getChildNodes(previousNode, childNodeDescription))
+                    .orElse(List.of());
             INodesRequestor childNodesRequestor = new NodesRequestor(previousChildNodes);
-
-          //@formatter:off
             var nodeComponentProps = NodeComponentProps.newNodeComponentProps()
                     .variableManager(nodeVariableManager)
                     .nodeDescription(childNodeDescription)
@@ -172,14 +174,14 @@ public class NodeComponent implements IComponent {
                     .previousParentElement(optionalPreviousNode.map(Object.class::cast))
                     .optionalParentAbsolutePosition(absolutePosition)
                     .build();
-            //@formatter:on
             return new Element(NodeComponent.class, nodeComponentProps);
-        }).collect(Collectors.toList());
+        })
+                .collect(Collectors.toList());
+        //@formatter:on
         List<Element> nodeChildren = new ArrayList<>();
         nodeChildren.add(labelElement);
         nodeChildren.addAll(borderNodes);
         nodeChildren.addAll(childNodes);
-
         // @formatter:off
         Size size = optionalPreviousNode
                 .map(Node::getSize)
@@ -198,7 +200,6 @@ public class NodeComponent implements IComponent {
                 .optionalAbsolutePosition(absolutePosition)
                 .build();
         // @formatter:on
-
         return new Element(NodeElementProps.TYPE, nodeElementProps);
     }
 

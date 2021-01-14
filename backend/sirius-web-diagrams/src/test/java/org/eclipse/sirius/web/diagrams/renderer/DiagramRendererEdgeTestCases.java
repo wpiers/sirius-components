@@ -88,7 +88,7 @@ public class DiagramRendererEdgeTestCases {
         // @formatter:on
 
         VariableManager variableManager = new VariableManager();
-        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, List.of(), Optional.empty(), Optional.empty());
+        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, List.of(), Optional.empty());
         Element element = new Element(DiagramComponent.class, props);
         Diagram diagram = new DiagramRenderer(this.logger).render(element);
 
@@ -135,7 +135,7 @@ public class DiagramRendererEdgeTestCases {
         // @formatter:on
 
         VariableManager variableManager = new VariableManager();
-        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, List.of(), Optional.empty(), Optional.empty());
+        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, List.of(), Optional.empty());
         Element element = new Element(DiagramComponent.class, props);
         Diagram diagram = new DiagramRenderer(this.logger).render(element);
 
@@ -247,9 +247,6 @@ public class DiagramRendererEdgeTestCases {
                 .semanticElementsProvider(variableManager -> List.of(FIRST_OBJECT_ID))
                 .sourceNodesProvider(sourceNodesProvider)
                 .targetNodesProvider(targetNodesProvider)
-                .optionalBeginLabelDescription(Optional.empty())
-                .optionalCenterLabelDescription(Optional.empty())
-                .optionalEndLabelDescription(Optional.empty())
                 .sourceNodeDescriptions(List.of(nodeDescription))
                 .targetNodeDescriptions(List.of(nodeDescription))
                 .targetObjectIdProvider(idProvider)

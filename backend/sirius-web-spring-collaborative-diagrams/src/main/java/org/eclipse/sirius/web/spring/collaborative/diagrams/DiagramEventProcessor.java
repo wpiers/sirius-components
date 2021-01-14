@@ -24,7 +24,6 @@ import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramEventHandler;
 import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramEventProcessor;
 import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramInput;
 import org.eclipse.sirius.web.diagrams.Diagram;
-import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.representations.IRepresentation;
 import org.eclipse.sirius.web.services.api.Context;
 import org.eclipse.sirius.web.services.api.dto.IPayload;
@@ -69,7 +68,7 @@ public class DiagramEventProcessor implements IDiagramEventProcessor {
 
         // We automatically refresh the representation before using it since things may have changed since the moment it
         // has been saved in the database. This is quite similar to the auto-refresh on loading in Sirius.
-        Diagram diagram = this.diagramCreationService.refresh(editingContext, diagramContext, Optional.empty()).orElse(null);
+        Diagram diagram = this.diagramCreationService.refresh(editingContext, diagramContext).orElse(null);
         diagramContext.update(diagram);
         this.diagramEventFlux = new DiagramEventFlux(diagram);
     }
@@ -95,7 +94,7 @@ public class DiagramEventProcessor implements IDiagramEventProcessor {
                 IDiagramEventHandler diagramEventHandler = optionalDiagramEventHandler.get();
                 EventHandlerResponse eventHandlerResponse = diagramEventHandler.handle(this.editingContext, this.diagramContext, diagramInput);
                 if (eventHandlerResponse.getShouldRefreshPredicate().test(this.diagramContext.getDiagram())) {
-                    this.doRefresh(Optional.empty());
+                    this.refresh();
                 }
                 return Optional.of(eventHandlerResponse);
             } else {
@@ -119,11 +118,7 @@ public class DiagramEventProcessor implements IDiagramEventProcessor {
 
     @Override
     public void refresh() {
-        this.doRefresh(Optional.empty());
-    }
-
-    private void doRefresh(Optional<Position> optionalNewNodeCreationPosition) {
-        Diagram refreshedDiagram = this.diagramCreationService.refresh(this.editingContext, this.diagramContext, optionalNewNodeCreationPosition).orElse(null);
+        Diagram refreshedDiagram = this.diagramCreationService.refresh(this.editingContext, this.diagramContext).orElse(null);
         this.diagramContext.update(refreshedDiagram);
         this.diagramEventFlux.diagramRefreshed(refreshedDiagram);
     }

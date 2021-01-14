@@ -23,7 +23,6 @@ import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramContext;
 import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramCreationService;
 import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.diagrams.Diagram;
-import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.web.diagrams.components.DiagramComponent;
 import org.eclipse.sirius.web.diagrams.components.DiagramComponentProps;
@@ -78,7 +77,7 @@ public class DiagramCreationService implements IDiagramCreationService {
 
     @Override
     public Diagram create(String label, Object targetObject, DiagramDescription diagramDescription, IEditingContext editingContext) {
-        Diagram newDiagram = this.doRender(label, targetObject, editingContext, Optional.empty(), diagramDescription, List.of(), Optional.empty());
+        Diagram newDiagram = this.doRender(label, targetObject, editingContext, diagramDescription, List.of(), Optional.empty());
         // For now, we layout the diagram at creation time only if the automatic layout at the refresh time has been
         // deactivated.
         if (Boolean.getBoolean("sirius.layout.auto.deactivate")) { //$NON-NLS-1$
@@ -88,7 +87,7 @@ public class DiagramCreationService implements IDiagramCreationService {
     }
 
     @Override
-    public Optional<Diagram> refresh(IEditingContext editingContext, IDiagramContext diagramContext, Optional<Position> optionalNewNodeCreationPosition) {
+    public Optional<Diagram> refresh(IEditingContext editingContext, IDiagramContext diagramContext) {
         Diagram previousDiagram = diagramContext.getDiagram();
         var optionalObject = this.objectService.getObject(editingContext, previousDiagram.getTargetObjectId());
         // @formatter:off
@@ -102,15 +101,14 @@ public class DiagramCreationService implements IDiagramCreationService {
             DiagramDescription diagramDescription = optionalDiagramDescription.get();
             List<ViewCreationRequest> viewCreationRequests = diagramContext.getViewCreationRequests();
 
-            Diagram diagram = this.doRender(previousDiagram.getLabel(), object, editingContext, optionalNewNodeCreationPosition, diagramDescription, viewCreationRequests,
-                    Optional.of(previousDiagram));
+            Diagram diagram = this.doRender(previousDiagram.getLabel(), object, editingContext, diagramDescription, viewCreationRequests, Optional.of(previousDiagram));
             return Optional.of(diagram);
         }
         return Optional.empty();
     }
 
-    private Diagram doRender(String label, Object targetObject, IEditingContext editingContext, Optional<Position> optionalNewNodeCreationPosition, DiagramDescription diagramDescription,
-            List<ViewCreationRequest> viewCreationRequests, Optional<Diagram> optionalPreviousDiagram) {
+    private Diagram doRender(String label, Object targetObject, IEditingContext editingContext, DiagramDescription diagramDescription, List<ViewCreationRequest> viewCreationRequests,
+            Optional<Diagram> optionalPreviousDiagram) {
 
         long start = System.currentTimeMillis();
 
@@ -119,7 +117,7 @@ public class DiagramCreationService implements IDiagramCreationService {
         variableManager.put(VariableManager.SELF, targetObject);
         variableManager.put(IEditingContext.EDITING_CONTEXT, editingContext);
 
-        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, viewCreationRequests, optionalPreviousDiagram, optionalNewNodeCreationPosition);
+        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, viewCreationRequests, optionalPreviousDiagram);
         Element element = new Element(DiagramComponent.class, props);
 
         Diagram newDiagram = new DiagramRenderer(this.logger).render(element);
