@@ -23,6 +23,7 @@ import org.eclipse.sirius.web.diagrams.LabelStyle;
 import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.TextBounds;
+import org.eclipse.sirius.web.diagrams.TextBoundsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -79,7 +80,7 @@ public class TextBoundsService {
     }
 
     public TextBounds getBounds(Label label) {
-        return label.getStyle().computeBounds(label.getText());
+        return new TextBoundsProvider().computeBounds(label.getStyle(), label.getText());
     }
 
 }

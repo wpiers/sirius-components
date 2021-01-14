@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import org.eclipse.sirius.web.annotations.Immutable;
 import org.eclipse.sirius.web.components.IProps;
-import org.eclipse.sirius.web.diagrams.Node;
 import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.web.diagrams.description.NodeDescription;
@@ -50,7 +49,7 @@ public final class NodeComponentProps implements IProps {
 
     private NodePositionProvider nodePositionProvider;
 
-    private Optional<Node> parentNode;
+    private Optional<Object> previousParentElement;
 
     private Optional<Position> optionalParentAbsolutePosition;
 
@@ -94,8 +93,8 @@ public final class NodeComponentProps implements IProps {
         return this.nodePositionProvider;
     }
 
-    public Optional<Node> getParentNode() {
-        return this.parentNode;
+    public Optional<Object> getPreviousParentElement() {
+        return this.previousParentElement;
     }
 
     public Optional<Position> getOptionalParentAbsolutePosition() {
@@ -125,7 +124,7 @@ public final class NodeComponentProps implements IProps {
 
         private NodePositionProvider nodePositionProvider;
 
-        private Optional<Node> parentNode;
+        private Optional<Object> previousParentElement;
 
         private Optional<Position> optionalParentAbsolutePosition;
 
@@ -169,8 +168,8 @@ public final class NodeComponentProps implements IProps {
             return this;
         }
 
-        public Builder parentNode(Optional<Node> parentNode) {
-            this.parentNode = Objects.requireNonNull(parentNode);
+        public Builder previousParentElement(Optional<Object> previousParentElement) {
+            this.previousParentElement = Objects.requireNonNull(previousParentElement);
             return this;
         }
 
@@ -189,7 +188,7 @@ public final class NodeComponentProps implements IProps {
             nodeComponentProps.viewCreationRequests = Objects.requireNonNull(this.viewCreationRequests);
             nodeComponentProps.parentElementId = Objects.requireNonNull(this.parentElementId);
             nodeComponentProps.nodePositionProvider = Objects.requireNonNull(this.nodePositionProvider);
-            nodeComponentProps.parentNode = Objects.requireNonNull(this.parentNode);
+            nodeComponentProps.previousParentElement = Objects.requireNonNull(this.previousParentElement);
             nodeComponentProps.optionalParentAbsolutePosition = Objects.requireNonNull(this.optionalParentAbsolutePosition);
             return nodeComponentProps;
         }

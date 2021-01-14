@@ -32,7 +32,7 @@ public class NodePositionProviderTestCases {
 
     @Test
     public void testNodePosition() {
-        NodePositionProvider nodePositionProvider = new NodePositionProvider(Optional.empty(), STARTX, STARTY);
+        NodePositionProvider nodePositionProvider = new NodePositionProvider(STARTX, STARTY);
         Position nextPosition = nodePositionProvider.getNextPosition(Optional.empty());
         assertThat(nextPosition).extracting(Position::getX).isEqualTo(Double.valueOf(STARTX));
         assertThat(nextPosition).extracting(Position::getY).isEqualTo(Double.valueOf(STARTY));

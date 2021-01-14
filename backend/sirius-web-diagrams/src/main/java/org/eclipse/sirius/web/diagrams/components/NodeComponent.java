@@ -128,7 +128,7 @@ public class NodeComponent implements IComponent {
         // @formatter:off
         Position position = optionalPreviousNode
                 .map(Node::getPosition)
-                .orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getParentNode()));
+                .orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getPreviousParentElement()));
 
         Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition()
                 .map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
@@ -147,7 +147,7 @@ public class NodeComponent implements IComponent {
                             .viewCreationRequests(this.props.getViewCreationRequests())
                             .parentElementId(nodeId)
                             .nodePositionProvider(nodePositionProvider)
-                            .parentNode(optionalPreviousNode)
+                            .previousParentElement(optionalPreviousNode.map(Object.class::cast))
                             .optionalParentAbsolutePosition(absolutePosition)
                             .build();
                     //@formatter:on
@@ -169,7 +169,7 @@ public class NodeComponent implements IComponent {
                     .viewCreationRequests(this.props.getViewCreationRequests())
                     .parentElementId(nodeId)
                     .nodePositionProvider(nodePositionProvider)
-                    .parentNode(optionalPreviousNode)
+                    .previousParentElement(optionalPreviousNode.map(Object.class::cast))
                     .optionalParentAbsolutePosition(absolutePosition)
                     .build();
             //@formatter:on
