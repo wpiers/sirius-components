@@ -15,6 +15,7 @@ package org.eclipse.sirius.web.diagrams.components;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.sirius.web.components.Element;
@@ -59,6 +60,7 @@ public class EdgeRoutingPointsProviderTestCases {
                 .style(style)
                 .position(Position.UNDEFINED)
                 .size(Size.UNDEFINED)
+                .optionalAbsolutePosition(Optional.empty())
                 .children(List.of())
                 .build();
         // @formatter:on

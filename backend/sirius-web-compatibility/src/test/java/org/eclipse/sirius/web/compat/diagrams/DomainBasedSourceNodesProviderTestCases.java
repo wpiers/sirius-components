@@ -15,6 +15,7 @@ package org.eclipse.sirius.web.compat.diagrams;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.emf.ecore.EObject;
@@ -93,6 +94,7 @@ public class DomainBasedSourceNodesProviderTestCases {
                 .style(style)
                 .position(Position.UNDEFINED)
                 .size(Size.UNDEFINED)
+                .optionalAbsolutePosition(Optional.empty())
                 .children(List.of())
                 .build();
         // @formatter:on

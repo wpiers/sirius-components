@@ -65,6 +65,12 @@ public class DiagramComponent implements IComponent {
                             .orElse(List.of());
                     INodesRequestor nodesRequestor = new NodesRequestor(previousNodes);
 //@formatter:off
+                    Optional<Position> parentAbsolutePosition = Optional.of(
+                            Position.newPosition()
+                            .x(0)
+                            .y(0)
+                            .build()
+                            );
                     var nodeComponentProps = NodeComponentProps.newNodeComponentProps()
                             .variableManager(variableManager)
                             .nodeDescription(nodeDescription)
@@ -74,7 +80,9 @@ public class DiagramComponent implements IComponent {
                             .viewCreationRequests(this.props.getViewCreationRequests())
                             .nodePositionProvider(nodePositionProvider)
                             .parentElementId(diagramId)
-                            .parentNode(Optional.empty()).build();
+                            .parentNode(Optional.empty())
+                            .optionalParentAbsolutePosition(parentAbsolutePosition)
+                            .build();
                   //@formatter:on
                     return new Element(NodeComponent.class, nodeComponentProps);
                 }).collect(Collectors.toList());

@@ -20,6 +20,7 @@ import java.util.UUID;
 import org.eclipse.sirius.web.annotations.Immutable;
 import org.eclipse.sirius.web.components.IProps;
 import org.eclipse.sirius.web.diagrams.Node;
+import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.web.diagrams.description.NodeDescription;
 import org.eclipse.sirius.web.diagrams.renderer.DiagramRenderingCache;
@@ -50,6 +51,8 @@ public final class NodeComponentProps implements IProps {
     private NodePositionProvider nodePositionProvider;
 
     private Optional<Node> parentNode;
+
+    private Optional<Position> optionalParentAbsolutePosition;
 
     private NodeComponentProps() {
         // Prevent instantiation
@@ -95,6 +98,10 @@ public final class NodeComponentProps implements IProps {
         return this.parentNode;
     }
 
+    public Optional<Position> getOptionalParentAbsolutePosition() {
+        return this.optionalParentAbsolutePosition;
+    }
+
     /**
      * The Builder to create a new {@link NodeComponentProps}.
      *
@@ -119,6 +126,8 @@ public final class NodeComponentProps implements IProps {
         private NodePositionProvider nodePositionProvider;
 
         private Optional<Node> parentNode;
+
+        private Optional<Position> optionalParentAbsolutePosition;
 
         public Builder variableManager(VariableManager variableManager) {
             this.variableManager = Objects.requireNonNull(variableManager);
@@ -165,6 +174,11 @@ public final class NodeComponentProps implements IProps {
             return this;
         }
 
+        public Builder optionalParentAbsolutePosition(Optional<Position> optionalParentAbsolutePosition) {
+            this.optionalParentAbsolutePosition = Objects.requireNonNull(optionalParentAbsolutePosition);
+            return this;
+        }
+
         NodeComponentProps build() {
             NodeComponentProps nodeComponentProps = new NodeComponentProps();
             nodeComponentProps.variableManager = Objects.requireNonNull(this.variableManager);
@@ -176,6 +190,7 @@ public final class NodeComponentProps implements IProps {
             nodeComponentProps.parentElementId = Objects.requireNonNull(this.parentElementId);
             nodeComponentProps.nodePositionProvider = Objects.requireNonNull(this.nodePositionProvider);
             nodeComponentProps.parentNode = Objects.requireNonNull(this.parentNode);
+            nodeComponentProps.optionalParentAbsolutePosition = Objects.requireNonNull(this.optionalParentAbsolutePosition);
             return nodeComponentProps;
         }
     }
