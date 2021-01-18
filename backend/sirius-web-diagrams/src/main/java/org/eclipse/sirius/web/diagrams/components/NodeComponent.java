@@ -115,29 +115,15 @@ public class NodeComponent implements IComponent {
         String targetObjectKind = nodeDescription.getTargetObjectKindProvider().apply(nodeVariableManager);
         String targetObjectLabel = nodeDescription.getTargetObjectLabelProvider().apply(nodeVariableManager);
 
-        LabelDescription labelDescription = nodeDescription.getLabelDescription();
-        nodeVariableManager.put(LabelDescription.OWNER_ID, nodeId);
-        // TODO fix child issue
-        NodeLabelBoundsProvider labelBoundsProvider = new NodeLabelBoundsProvider(type, nodeSizeProvider.getSize(List.of()));
-        LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, labelBoundsProvider,
-                LabelPlacementKind.INSIDE_CENTER.getValue());
-        Element labelElement = new Element(LabelComponent.class, labelComponentProps);
-        INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
         IDiagramElementRequestor diagramElementRequestor = new DiagramElementRequestor();
 
-        // @formatter:off
-        Position position = optionalPreviousNode
-                .map(Node::getPosition)
-                .orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getPreviousParentElement()));
+        Position position = optionalPreviousNode.map(Node::getPosition).orElseGet(() -> nodePositionProvider.getNextPosition(this.props.getPreviousParentElement()));
+        Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition().map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
 
-        Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition()
-                .map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
-        var borderNodes = nodeDescription.getBorderNodeDescriptions().stream()
-                .map(borderNodeDescription -> {
-                    List<Node> previousBorderNodes = optionalPreviousNode.map(previousNode -> diagramElementRequestor.getBorderNodes(previousNode, borderNodeDescription))
-                            .orElse(List.of());
-                    INodesRequestor borderNodesRequestor = new NodesRequestor(previousBorderNodes);
-                    //@formatter:off
+        var borderNodes = nodeDescription.getBorderNodeDescriptions().stream().map(borderNodeDescription -> {
+            List<Node> previousBorderNodes = optionalPreviousNode.map(previousNode -> diagramElementRequestor.getBorderNodes(previousNode, borderNodeDescription)).orElse(List.of());
+            INodesRequestor borderNodesRequestor = new NodesRequestor(previousBorderNodes);
+            //@formatter:off
                     var nodeComponentProps = NodeComponentProps.newNodeComponentProps()
                             .variableManager(nodeVariableManager)
                             .nodeDescription(borderNodeDescription)
@@ -151,9 +137,9 @@ public class NodeComponent implements IComponent {
                             .optionalParentAbsolutePosition(absolutePosition)
                             .build();
                     //@formatter:on
-                    return new Element(NodeComponent.class, nodeComponentProps);
+            return new Element(NodeComponent.class, nodeComponentProps);
+        }).collect(Collectors.toList());
 
-                }).collect(Collectors.toList());
         //@formatter:off
         var childNodes = nodeDescription.getChildNodeDescriptions()
                 .stream()
@@ -175,17 +161,30 @@ public class NodeComponent implements IComponent {
                     .optionalParentAbsolutePosition(absolutePosition)
                     .build();
             return new Element(NodeComponent.class, nodeComponentProps);
-        })
-                .collect(Collectors.toList());
+        }).collect(Collectors.toList());
         //@formatter:on
+
+        // Node size, according to the children
+        Size size = optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize(childNodes));
+
+        // Node label
+        NodeLabelBoundsProvider labelBoundsProvider = new NodeLabelBoundsProvider(type, size);
+        LabelDescription labelDescription = nodeDescription.getLabelDescription();
+        nodeVariableManager.put(LabelDescription.OWNER_ID, nodeId);
+        LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, labelBoundsProvider,
+                LabelPlacementKind.INSIDE_CENTER.getValue());
+        Element labelElement = new Element(LabelComponent.class, labelComponentProps);
+
+        // Node Style
+        INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
+
+        // All children
         List<Element> nodeChildren = new ArrayList<>();
         nodeChildren.add(labelElement);
         nodeChildren.addAll(borderNodes);
         nodeChildren.addAll(childNodes);
+
         // @formatter:off
-        Size size = optionalPreviousNode
-                .map(Node::getSize)
-                .orElseGet(() -> nodeSizeProvider.getSize(nodeChildren));
         NodeElementProps nodeElementProps = NodeElementProps.newNodeElementProps(nodeId)
                 .type(type)
                 .targetObjectId(targetObjectId)
