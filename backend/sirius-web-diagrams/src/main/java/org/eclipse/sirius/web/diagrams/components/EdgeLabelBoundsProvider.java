@@ -15,7 +15,6 @@ package org.eclipse.sirius.web.diagrams.components;
 import java.util.List;
 
 import org.eclipse.sirius.web.diagrams.Position;
-import org.eclipse.sirius.web.diagrams.Position.Builder;
 import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.TextBounds;
 
@@ -51,8 +50,7 @@ public class EdgeLabelBoundsProvider implements ILabelBoundsProvider {
         // TODO manage other placements than CENTER
         double x = (sourceAnchor.getX() + targetAnchor.getX()) / 2;
         double y = (sourceAnchor.getY() + targetAnchor.getY()) / 2;
-        Builder builder = Position.newPosition().x(x).y(y);
-        return builder.build();
+        return Position.newPosition().x(x).y(y).build();
     }
 
     @Override
