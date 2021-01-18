@@ -118,7 +118,7 @@ public class NodeComponent implements IComponent {
         LabelDescription labelDescription = nodeDescription.getLabelDescription();
         nodeVariableManager.put(LabelDescription.OWNER_ID, nodeId);
         // TODO fix child issue
-        LabelBoundsProvider labelBoundsProvider = new LabelBoundsProvider(type, nodeSizeProvider.getSize(List.of()));
+        NodeLabelBoundsProvider labelBoundsProvider = new NodeLabelBoundsProvider(type, nodeSizeProvider.getSize(List.of()));
         LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, labelBoundsProvider,
                 LabelPlacementKind.INSIDE_CENTER.getValue());
         Element labelElement = new Element(LabelComponent.class, labelComponentProps);

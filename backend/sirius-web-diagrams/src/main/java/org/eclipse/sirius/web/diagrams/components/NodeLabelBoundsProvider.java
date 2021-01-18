@@ -19,33 +19,25 @@ import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.TextBounds;
 
 /**
- * Provides the bounds (Alignment, Size and Position) to apply to a new Label.
+ * Provides the bounds (Alignment, Size and Position) to apply to a new Node Label.
  *
  * @author wpiers
  */
-public class LabelBoundsProvider {
-
-    /** The Spacing between a label and the element to describe. */
-    private static final int LABEL_Y_SPACING = 5;
+public class NodeLabelBoundsProvider implements ILabelBoundsProvider {
 
     private String parentNodeType;
 
     private Size parentNodeSize;
 
     /**
-     * Constructor for an edge.
-     */
-    public LabelBoundsProvider() {
-    }
-
-    /**
      * Constructor for a node.
      */
-    public LabelBoundsProvider(String parentType, Size parentSize) {
+    public NodeLabelBoundsProvider(String parentType, Size parentSize) {
         this.parentNodeType = parentType;
         this.parentNodeSize = parentSize;
     }
 
+    @Override
     public Position getPosition(TextBounds textBounds, String type) {
         if (this.parentNodeType == null) {
             return Position.UNDEFINED;
@@ -63,10 +55,12 @@ public class LabelBoundsProvider {
         return builder.build();
     }
 
+    @Override
     public Position getAlignment(TextBounds textBounds, String type) {
         return textBounds.getAlignment();
     }
 
+    @Override
     public Size getSize(TextBounds textBounds, String type) {
         return textBounds.getSize();
     }

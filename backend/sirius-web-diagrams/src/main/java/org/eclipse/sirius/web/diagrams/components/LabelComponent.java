@@ -46,7 +46,7 @@ public class LabelComponent implements IComponent {
         VariableManager variableManager = this.props.getVariableManager();
         LabelDescription labelDescription = this.props.getLabelDescription();
         Optional<Label> optionalPreviousLabel = this.props.getPreviousLabel();
-        LabelBoundsProvider labelBoundsProvider = this.props.getLabelBoundsProvider();
+        ILabelBoundsProvider labelBoundsProvider = this.props.getLabelBoundsProvider();
         String type = this.props.getType();
 
         String id = labelDescription.getIdProvider().apply(variableManager);
