@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -59,6 +60,7 @@ public class EdgeComponent implements IComponent {
         EdgeDescription edgeDescription = this.props.getEdgeDescription();
         IEdgesRequestor edgesRequestor = this.props.getEdgesRequestor();
         DiagramRenderingCache cache = this.props.getCache();
+        Set<UUID> movedElementIds = this.props.getMovedElementIds();
         EdgeRoutingPointsProvider edgeRoutingPointsProvider = new EdgeRoutingPointsProvider();
 
         List<Element> children = new ArrayList<>();
@@ -66,7 +68,6 @@ public class EdgeComponent implements IComponent {
         // @formatter:off
         boolean hasCandidates = this.hasNodeCandidates(edgeDescription.getSourceNodeDescriptions(), cache)
                              && this.hasNodeCandidates(edgeDescription.getTargetNodeDescriptions(), cache);
-
         // @formatter:on
 
         if (hasCandidates) {
@@ -107,10 +108,19 @@ public class EdgeComponent implements IComponent {
                             String edgeType = optionalPreviousEdge
                                     .map(Edge::getType)
                                     .orElse("edge:straight"); //$NON-NLS-1$
-                            List<Position> routingPoints = optionalPreviousEdge
-                                    .map(Edge::getRoutingPoints)
-                                    .orElseGet(()-> edgeRoutingPointsProvider.getRoutingPoints(sourceNode, targetNode));
-                            List<Element> edgeChildren = this.getLabelsChildren(edgeDescription, edgeVariableManager, optionalPreviousEdge, id, routingPoints);
+
+                            List<Position> routingPoints;
+                            List<Element> labelChildren;
+                            if (movedElementIds.contains(sourceId) || movedElementIds.contains(targetId)) {
+                                routingPoints = edgeRoutingPointsProvider.getRoutingPoints(sourceNode, targetNode);
+                                labelChildren = this.getLabelsChildren(edgeDescription, edgeVariableManager, Optional.empty(), id, routingPoints);
+                            } else {
+                                routingPoints = optionalPreviousEdge
+                                        .map(Edge::getRoutingPoints)
+                                        .orElseGet(()-> edgeRoutingPointsProvider.getRoutingPoints(sourceNode, targetNode));
+                                labelChildren = this.getLabelsChildren(edgeDescription, edgeVariableManager, optionalPreviousEdge, id, routingPoints);
+                            }
+
                             EdgeElementProps edgeElementProps = EdgeElementProps.newEdgeElementProps(id)
                                     .type(edgeType)
                                     .descriptionId(edgeDescription.getId())
@@ -121,7 +131,7 @@ public class EdgeComponent implements IComponent {
                                     .targetId(targetId)
                                     .style(style)
                                     .routingPoints(routingPoints)
-                                    .children(edgeChildren)
+                                    .children(labelChildren)
                                     .build();
                             // @formatter:on
 

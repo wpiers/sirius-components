@@ -93,7 +93,6 @@ public class UpdateNodePositionEventHandler implements IDiagramEventHandler {
     }
 
     private EventHandlerResponse handleUpdateNodePosition(IEditingContext editingContext, IDiagramContext diagramContext, UpdateNodePositionInput diagramInput) {
-        // Diagram newDiagram = this.updateDiagram(diagramContext.getDiagram(), diagramInput);
         // @formatter:off
         Position newPosition = Position.newPosition()
                 .x(diagramInput.getNewPositionX())

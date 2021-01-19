@@ -12,10 +12,14 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.spring.collaborative.diagrams;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +28,7 @@ import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramContext;
 import org.eclipse.sirius.web.collaborative.diagrams.api.IDiagramCreationService;
 import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.diagrams.Diagram;
+import org.eclipse.sirius.web.diagrams.Node;
 import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.web.diagrams.components.DiagramComponent;
@@ -120,8 +125,12 @@ public class DiagramCreationService implements IDiagramCreationService {
         variableManager.put(IEditingContext.EDITING_CONTEXT, editingContext);
 
         Map<UUID, Position> movedElementIdToNewPositionMap = optionalDiagramContext.map(IDiagramContext::getMovedElementIDToNewPositionMap).orElseGet(() -> Map.of());
+        Set<UUID> allMovedElementIds = Set.of();
+        if (!movedElementIdToNewPositionMap.isEmpty() && optionalDiagramContext.isPresent()) {
+            allMovedElementIds = this.getRelatedElementIDs(movedElementIdToNewPositionMap.keySet(), optionalDiagramContext.get().getDiagram());
+        }
         Optional<Diagram> optionalPreviousDiagram = optionalDiagramContext.map(IDiagramContext::getDiagram);
-        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, viewCreationRequests, optionalPreviousDiagram, movedElementIdToNewPositionMap);
+        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, viewCreationRequests, optionalPreviousDiagram, movedElementIdToNewPositionMap, allMovedElementIds);
         Element element = new Element(DiagramComponent.class, props);
 
         Diagram newDiagram = new DiagramRenderer(this.logger).render(element);
@@ -130,6 +139,10 @@ public class DiagramCreationService implements IDiagramCreationService {
         }
         RepresentationDescriptor representationDescriptor = this.getRepresentationDescriptor(editingContext.getProjectId(), newDiagram);
         this.representationService.save(representationDescriptor);
+
+        if (!movedElementIdToNewPositionMap.isEmpty()) {
+            movedElementIdToNewPositionMap.clear();
+        }
 
         long end = System.currentTimeMillis();
         this.timer.record(end - start, TimeUnit.MILLISECONDS);
@@ -148,4 +161,49 @@ public class DiagramCreationService implements IDiagramCreationService {
         // @formatter:on
     }
 
+    public Set<UUID> getRelatedElementIDs(Set<UUID> baseElements, Diagram diagram) {
+        Set<UUID> res = new HashSet<>();
+        res.addAll(baseElements);
+        Map<UUID, Node> nodesPerIdMap = this.computeNodesPerIdMap(diagram);
+        for (UUID id : baseElements) {
+            Node node = nodesPerIdMap.get(id);
+            if (node != null) {
+                res.addAll(this.getAllChildrenIds(node));
+            }
+        }
+        return res;
+    }
+
+    private Map<UUID, Node> computeNodesPerIdMap(Diagram diagram) {
+        Map<UUID, Node> res = new HashMap<>();
+        for (Node node : diagram.getNodes()) {
+            res.put(node.getId(), node);
+            res.putAll(this.computeNodesPerIdMap(node));
+        }
+        return res;
+    }
+
+    private Map<UUID, Node> computeNodesPerIdMap(Node node) {
+        Map<UUID, Node> res = new HashMap<>();
+        List<Node> subNodes = new ArrayList<>();
+        subNodes.addAll(node.getBorderNodes());
+        subNodes.addAll(node.getChildNodes());
+        for (Node subNode : subNodes) {
+            res.put(subNode.getId(), subNode);
+            res.putAll(this.computeNodesPerIdMap(subNode));
+        }
+        return res;
+    }
+
+    private Set<UUID> getAllChildrenIds(Node node) {
+        Set<UUID> res = new HashSet<>();
+        List<Node> subNodes = new ArrayList<>();
+        subNodes.addAll(node.getBorderNodes());
+        subNodes.addAll(node.getChildNodes());
+        for (Node subNode : subNodes) {
+            res.add(subNode.getId());
+            res.addAll(this.getAllChildrenIds(subNode));
+        }
+        return res;
+    }
 }
