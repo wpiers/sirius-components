@@ -37,6 +37,8 @@ public class DiagramContext implements IDiagramContext {
 
     private final Map<UUID, Position> movedElementIDToNewPositionMap;
 
+    private Position startingPosition;
+
     public DiagramContext(Diagram initialDiagram) {
         this.diagram = Objects.requireNonNull(initialDiagram);
         this.viewCreationRequests = new ArrayList<>();
@@ -63,4 +65,12 @@ public class DiagramContext implements IDiagramContext {
         return this.movedElementIDToNewPositionMap;
     }
 
+    @Override
+    public Position getStartingPosition() {
+        return this.startingPosition;
+    }
+
+    public void setStartingPosition(Position startingPosition) {
+        this.startingPosition = startingPosition;
+    }
 }

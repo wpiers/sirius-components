@@ -44,14 +44,17 @@ public class DiagramComponentProps implements IProps {
 
     private final Set<UUID> allMovedElementIds;
 
+    private final Optional<Position> optionalStartingPosition;
+
     public DiagramComponentProps(VariableManager variableManager, DiagramDescription diagramDescription, List<ViewCreationRequest> viewCreationRequests, Optional<Diagram> previousDiagram,
-            Map<UUID, Position> movedElementIdToNewPositionMap, Set<UUID> allMovedElementIds) {
+            Map<UUID, Position> movedElementIdToNewPositionMap, Set<UUID> allMovedElementIds, Optional<Position> optionalStartingPosition) {
         this.variableManager = Objects.requireNonNull(variableManager);
         this.diagramDescription = Objects.requireNonNull(diagramDescription);
         this.previousDiagram = Objects.requireNonNull(previousDiagram);
         this.viewCreationRequests = List.copyOf(Objects.requireNonNull(viewCreationRequests));
         this.movedElementIdToNewPositionMap = Map.copyOf(Objects.requireNonNull(movedElementIdToNewPositionMap));
         this.allMovedElementIds = Set.copyOf(Objects.requireNonNull(allMovedElementIds));
+        this.optionalStartingPosition = Objects.requireNonNull(optionalStartingPosition);
     }
 
     public VariableManager getVariableManager() {
@@ -76,5 +79,9 @@ public class DiagramComponentProps implements IProps {
 
     public Set<UUID> getAllMovedElementIds() {
         return this.allMovedElementIds;
+    }
+
+    public Optional<Position> getOptionalStartingPosition() {
+        return this.optionalStartingPosition;
     }
 }

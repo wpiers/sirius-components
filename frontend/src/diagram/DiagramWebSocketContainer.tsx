@@ -346,13 +346,16 @@ export const DiagramWebSocketContainer = ({
           invokeEdgeToolMutation({ variables: { input } });
           edgeCreationFeedback.reset();
         } else {
-          const [diagramElementId] = params;
-
+          const [diagramElementId, startingPosition] = params;
+          let startingPositionX = startingPosition ? startingPosition.x : 0;
+          let startingPositionY = startingPosition ? startingPosition.y : 0;
           const input = {
             projectId,
             representationId,
             diagramElementId,
             toolId,
+            startingPositionX,
+            startingPositionY,
           };
           invokeNodeToolMutation({ variables: { input } });
         }
@@ -538,7 +541,7 @@ export const DiagramWebSocketContainer = ({
    */
   let contextualPaletteContent;
   if (!readOnly && contextualPalette) {
-    const { element, canvasBounds, origin, renameable, deletable } = contextualPalette;
+    const { element, startingPosition, canvasBounds, origin, renameable, deletable } = contextualPalette;
     const { x, y } = origin;
     const invokeCloseFromContextualPalette = () => dispatch({ type: SET_CONTEXTUAL_PALETTE__ACTION });
     const style = {
@@ -564,7 +567,7 @@ export const DiagramWebSocketContainer = ({
         edgeCreationFeedback.init(x, y);
         diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION, sourceElement: element });
       } else if (tool.__typename === 'CreateNodeTool') {
-        invokeTool(tool, element.id);
+        invokeTool(tool, element.id, startingPosition);
         diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION });
       }
       dispatch({ type: SET_DEFAULT_TOOL__ACTION, defaultTool: tool });

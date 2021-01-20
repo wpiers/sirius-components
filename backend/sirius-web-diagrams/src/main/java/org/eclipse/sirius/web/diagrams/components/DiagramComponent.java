@@ -49,7 +49,7 @@ public class DiagramComponent implements IComponent {
         DiagramDescription diagramDescription = this.props.getDiagramDescription();
         Map<UUID, Position> movedElementIdToNewPositionMap = this.props.getMovedElementIdToNewPositionMap();
         Set<UUID> allMovedElementIds = this.props.getAllMovedElementIds();
-        NodePositionProvider nodePositionProvider = new NodePositionProvider(Double.valueOf(0), Double.valueOf(0), movedElementIdToNewPositionMap);
+        NodePositionProvider nodePositionProvider = new NodePositionProvider(this.props.getOptionalStartingPosition(), movedElementIdToNewPositionMap);
         var optionalPreviousDiagram = this.props.getPreviousDiagram();
 
         String label = diagramDescription.getLabelProvider().apply(variableManager);

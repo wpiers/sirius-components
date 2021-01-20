@@ -40,4 +40,7 @@ public interface IDiagramContext {
 
     Map<UUID, Position> getMovedElementIDToNewPositionMap();
 
+    Position getStartingPosition();
+
+    void setStartingPosition(Position startingPosition);
 }
