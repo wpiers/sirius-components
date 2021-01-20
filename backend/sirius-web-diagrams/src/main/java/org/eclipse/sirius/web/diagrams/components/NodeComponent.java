@@ -115,16 +115,12 @@ public class NodeComponent implements IComponent {
         String targetObjectKind = nodeDescription.getTargetObjectKindProvider().apply(nodeVariableManager);
         String targetObjectLabel = nodeDescription.getTargetObjectLabelProvider().apply(nodeVariableManager);
 
-        INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
         IDiagramElementRequestor diagramElementRequestor = new DiagramElementRequestor();
+        INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
+
+        Position position = nodePositionProvider.getPosition(nodeId, optionalPreviousNode, this.props.getPreviousParentElement(), nodeSizeProvider, style);
 
         //@formatter:off
-        Position position = nodePositionProvider.getMovedPosition(nodeId)
-                .orElse(optionalPreviousNode.map(Node::getPosition)
-                        .orElseGet(() -> nodePositionProvider.getNextPosition(
-                                this.props.getPreviousParentElement(),
-                                nodeSizeProvider.getSize(style, List.of()) // FIXME we do not know the child nodes yet
-                )));
         Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition()
                 .map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
         var borderNodes = nodeDescription.getBorderNodeDescriptions()
@@ -184,7 +180,6 @@ public class NodeComponent implements IComponent {
         nodeChildren.add(labelElement);
         nodeChildren.addAll(borderNodes);
         nodeChildren.addAll(childNodes);
-
         // @formatter:off
         NodeElementProps nodeElementProps = NodeElementProps.newNodeElementProps(nodeId)
                 .type(type)

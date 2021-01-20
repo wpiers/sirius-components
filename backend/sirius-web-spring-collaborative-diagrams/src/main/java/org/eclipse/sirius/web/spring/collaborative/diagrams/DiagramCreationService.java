@@ -130,7 +130,9 @@ public class DiagramCreationService implements IDiagramCreationService {
             allMovedElementIds = this.getRelatedElementIDs(movedElementIdToNewPositionMap.keySet(), optionalDiagramContext.get().getDiagram());
         }
         Optional<Diagram> optionalPreviousDiagram = optionalDiagramContext.map(IDiagramContext::getDiagram);
-        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, viewCreationRequests, optionalPreviousDiagram, movedElementIdToNewPositionMap, allMovedElementIds);
+        Optional<Position> optionalStartingPosition = Optional.ofNullable(optionalDiagramContext.map(IDiagramContext::getStartingPosition).orElse(null));
+        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, viewCreationRequests, optionalPreviousDiagram, movedElementIdToNewPositionMap, allMovedElementIds,
+                optionalStartingPosition);
         Element element = new Element(DiagramComponent.class, props);
 
         Diagram newDiagram = new DiagramRenderer(this.logger).render(element);
@@ -140,8 +142,12 @@ public class DiagramCreationService implements IDiagramCreationService {
         RepresentationDescriptor representationDescriptor = this.getRepresentationDescriptor(editingContext.getProjectId(), newDiagram);
         this.representationService.save(representationDescriptor);
 
+        // Reset move / creation tool data
         if (!movedElementIdToNewPositionMap.isEmpty()) {
             movedElementIdToNewPositionMap.clear();
+        }
+        if (optionalDiagramContext.isPresent()) {
+            optionalDiagramContext.get().setStartingPosition(null);
         }
 
         long end = System.currentTimeMillis();

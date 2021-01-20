@@ -134,7 +134,7 @@ public class UnsynchronizedDiagramTestCases {
 
     private Diagram render(DiagramDescription diagramDescription, List<ViewCreationRequest> viewCreationRequests, Optional<Diagram> optionalPreviousDiagram) {
         VariableManager variableManager = new VariableManager();
-        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, viewCreationRequests, optionalPreviousDiagram, Map.of(), Set.of());
+        DiagramComponentProps props = new DiagramComponentProps(variableManager, diagramDescription, viewCreationRequests, optionalPreviousDiagram, Map.of(), Set.of(), Optional.empty());
         Element element = new Element(DiagramComponent.class, props);
         Diagram diagram = new DiagramRenderer(this.logger).render(element);
         return diagram;

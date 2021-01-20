@@ -36,6 +36,10 @@ public final class InvokeNodeToolOnDiagramInput implements IDiagramInput {
 
     private String toolId;
 
+    private double startingPositionX;
+
+    private double startingPositionY;
+
     @GraphQLID
     @GraphQLField
     @GraphQLNonNull
@@ -63,6 +67,18 @@ public final class InvokeNodeToolOnDiagramInput implements IDiagramInput {
     @GraphQLNonNull
     public String getToolId() {
         return this.toolId;
+    }
+
+    @GraphQLField
+    @GraphQLNonNull
+    public double getStartingPositionX() {
+        return this.startingPositionX;
+    }
+
+    @GraphQLField
+    @GraphQLNonNull
+    public double getStartingPositionY() {
+        return this.startingPositionY;
     }
 
     @Override
