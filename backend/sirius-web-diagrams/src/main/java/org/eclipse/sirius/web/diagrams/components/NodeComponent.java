@@ -115,6 +115,8 @@ public class NodeComponent implements IComponent {
         String targetObjectKind = nodeDescription.getTargetObjectKindProvider().apply(nodeVariableManager);
         String targetObjectLabel = nodeDescription.getTargetObjectLabelProvider().apply(nodeVariableManager);
 
+        INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
+
         IDiagramElementRequestor diagramElementRequestor = new DiagramElementRequestor();
 
         //@formatter:off
@@ -122,7 +124,7 @@ public class NodeComponent implements IComponent {
                 .map(Node::getPosition)
                 .orElseGet(() -> nodePositionProvider.getNextPosition(
                         this.props.getPreviousParentElement(),
-                        nodeSizeProvider.getSize(List.of()) // FIXME we do not know the child nodes yet
+                        nodeSizeProvider.getSize(style, List.of()) // FIXME we do not know the child nodes yet
                 ));
         //@formatter:on
         Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition().map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
@@ -171,18 +173,18 @@ public class NodeComponent implements IComponent {
         }).collect(Collectors.toList());
         //@formatter:on
 
-        Size size = optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize(childNodes));
+        Size size = optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize(style, childNodes));
         NodeLabelBoundsProvider labelBoundsProvider = new NodeLabelBoundsProvider(type, size);
         LabelDescription labelDescription = nodeDescription.getLabelDescription();
         nodeVariableManager.put(LabelDescription.OWNER_ID, nodeId);
         LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, labelBoundsProvider,
                 LabelPlacementKind.INSIDE_CENTER.getValue());
         Element labelElement = new Element(LabelComponent.class, labelComponentProps);
-        INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
         List<Element> nodeChildren = new ArrayList<>();
         nodeChildren.add(labelElement);
         nodeChildren.addAll(borderNodes);
         nodeChildren.addAll(childNodes);
+
         // @formatter:off
         NodeElementProps nodeElementProps = NodeElementProps.newNodeElementProps(nodeId)
                 .type(type)

@@ -29,7 +29,7 @@ public class NodeSizeProviderTestCases {
     @Test
     public void testNodeSize() {
         NodeSizeProvider nodeSizeProvider = new NodeSizeProvider();
-        Size size = nodeSizeProvider.getSize(List.of());
+        Size size = nodeSizeProvider.getSize(null, List.of());
         assertThat(size).extracting(Size::getHeight).isEqualTo(Double.valueOf(70));
         assertThat(size).extracting(Size::getWidth).isEqualTo(Double.valueOf(150));
     }
