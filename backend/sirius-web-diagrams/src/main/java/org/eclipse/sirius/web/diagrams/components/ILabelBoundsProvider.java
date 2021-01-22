@@ -12,6 +12,9 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.diagrams.components;
 
+import java.util.Optional;
+
+import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.TextBounds;
@@ -29,33 +32,39 @@ public interface ILabelBoundsProvider {
     /**
      * Returns the position of a label with the given parameters.
      *
+     * @param optionalPreviousLabel
+     *            the optional previous label
      * @param textBounds
      *            the label text bounds
      * @param type
      *            the label type
      * @return the label position
      */
-    Position getPosition(TextBounds textBounds, String type);
+    Position getPosition(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type);
 
     /**
      * Returns the alignment of a label with the given parameters.
      *
+     * @param optionalPreviousLabel
+     *            the optional previous label
      * @param textBounds
      *            the label text bounds
      * @param type
      *            the label type
      * @return the label alignment
      */
-    Position getAlignment(TextBounds textBounds, String type);
+    Position getAlignment(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type);
 
     /**
      * Returns the size of a label with the given parameters.
      *
+     * @param optionalPreviousLabel
+     *            the optional previous label
      * @param textBounds
      *            the label text bounds
      * @param type
      *            the label type
      * @return the label size
      */
-    Size getSize(TextBounds textBounds, String type);
+    Size getSize(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type);
 }

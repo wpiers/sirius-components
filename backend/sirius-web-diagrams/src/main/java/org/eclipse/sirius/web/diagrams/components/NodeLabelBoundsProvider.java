@@ -12,6 +12,9 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.diagrams.components;
 
+import java.util.Optional;
+
+import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.NodeType;
 import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.Position.Builder;
@@ -38,10 +41,12 @@ public class NodeLabelBoundsProvider implements ILabelBoundsProvider {
     }
 
     @Override
-    public Position getPosition(TextBounds textBounds, String type) {
+    public Position getPosition(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type) {
         if (this.parentNodeType == null) {
             return Position.UNDEFINED;
         }
+
+        // We always recompute the position according to the textbounds as the text might have changed.
         // TODO manage other placements than CENTER
         double x = (this.parentNodeSize.getWidth() - textBounds.getSize().getWidth()) / 2;
         Builder builder = Position.newPosition().x(x);
@@ -56,13 +61,13 @@ public class NodeLabelBoundsProvider implements ILabelBoundsProvider {
     }
 
     @Override
-    public Position getAlignment(TextBounds textBounds, String type) {
-        return textBounds.getAlignment();
+    public Position getAlignment(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type) {
+        return optionalPreviousLabel.map(Label::getAlignment).orElse(textBounds.getAlignment());
     }
 
     @Override
-    public Size getSize(TextBounds textBounds, String type) {
-        return textBounds.getSize();
+    public Size getSize(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type) {
+        return optionalPreviousLabel.map(Label::getSize).orElse(textBounds.getSize());
     }
 
 }
