@@ -19,6 +19,7 @@ import com.google.common.cache.LoadingCache;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +39,6 @@ import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -156,8 +155,8 @@ public class ImageSizeProvider {
             // We will copy the svg file to avoid jar in jar path problems.
             tmpSvg = java.io.File.createTempFile("sirius-web", extension); //$NON-NLS-1$
             try (FileOutputStream outputStream = new FileOutputStream(tmpSvg)) {
-                IOUtils.copy(inJarInputStream, outputStream);
-                try (InputStream onTmpInputStream = FileUtils.openInputStream(tmpSvg)) {
+                inJarInputStream.transferTo(outputStream);
+                try (InputStream onTmpInputStream = new FileInputStream(tmpSvg)) {
                     SVGDocument doc = this.factory.createSVGDocument(tmpSvg.toURI().toURL().toString(), onTmpInputStream);
                     BridgeContext context = new BridgeContext(this.agent, this.loader);
                     context.setDynamic(true);
