@@ -13,7 +13,9 @@
 package org.eclipse.sirius.web.diagrams.components;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.TextBounds;
@@ -40,27 +42,36 @@ public class EdgeLabelBoundsProvider implements ILabelBoundsProvider {
     }
 
     @Override
-    public Position getPosition(TextBounds textBounds, String type) {
-        if (this.routingPoints.size() < 2) {
-            return Position.UNDEFINED;
+    public Position getPosition(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type) {
+        Position position;
+        if (optionalPreviousLabel.isPresent()) {
+            // The position computed by the layout stays the most relevant
+            position = optionalPreviousLabel.get().getPosition();
+        } else if (this.routingPoints.size() < 2) {
+            position = Position.UNDEFINED;
+        } else {
+            Position sourceAnchor = this.routingPoints.get(0);
+            Position targetAnchor = this.routingPoints.get(this.routingPoints.size() - 1);
+            position = this.computeNewPosition(textBounds, sourceAnchor, targetAnchor);
         }
-        Position sourceAnchor = this.routingPoints.get(0);
-        Position targetAnchor = this.routingPoints.get(this.routingPoints.size() - 1);
+        return position;
+    }
 
+    private Position computeNewPosition(TextBounds textBounds, Position sourceAnchor, Position targetAnchor) {
         // TODO manage other placements than CENTER
-        double x = (sourceAnchor.getX() + targetAnchor.getX()) / 2;
+        double x = ((sourceAnchor.getX() + targetAnchor.getX()) / 2) - (textBounds.getSize().getWidth() / 2);
         double y = (sourceAnchor.getY() + targetAnchor.getY()) / 2;
         return Position.newPosition().x(x).y(y).build();
     }
 
     @Override
-    public Position getAlignment(TextBounds textBounds, String type) {
-        return textBounds.getAlignment();
+    public Position getAlignment(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type) {
+        return optionalPreviousLabel.map(Label::getAlignment).orElse(textBounds.getAlignment());
     }
 
     @Override
-    public Size getSize(TextBounds textBounds, String type) {
-        return textBounds.getSize();
+    public Size getSize(Optional<Label> optionalPreviousLabel, TextBounds textBounds, String type) {
+        return optionalPreviousLabel.map(Label::getSize).orElse(textBounds.getSize());
     }
 
 }

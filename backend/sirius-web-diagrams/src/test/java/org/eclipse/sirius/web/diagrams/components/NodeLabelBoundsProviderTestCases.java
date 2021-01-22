@@ -14,6 +14,8 @@ package org.eclipse.sirius.web.diagrams.components;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
+
 import org.eclipse.sirius.web.diagrams.LabelStyle;
 import org.eclipse.sirius.web.diagrams.NodeType;
 import org.eclipse.sirius.web.diagrams.Position;
@@ -45,15 +47,15 @@ public class NodeLabelBoundsProviderTestCases {
         LabelStyle labelStyle = LabelStyle.newLabelStyle().color(LABEL_COLOR).fontSize(FONT_SIZE).iconURL(ICON_URL).build();
         TextBounds textBounds = new TextBoundsProvider().computeBounds(labelStyle, TEST_LABEL);
 
-        Position position = labelBoundsProvider.getPosition(textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
+        Position position = labelBoundsProvider.getPosition(Optional.empty(), textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
         assertThat(position).extracting(Position::getX).isEqualTo(Double.valueOf(42.5390625));
         assertThat(position).extracting(Position::getY).isEqualTo(Double.valueOf(-23.3984375));
 
-        Position alignment = labelBoundsProvider.getAlignment(textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
+        Position alignment = labelBoundsProvider.getAlignment(Optional.empty(), textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
         assertThat(alignment).extracting(Position::getX).isEqualTo(Double.valueOf(0));
         assertThat(alignment).extracting(Position::getY).isEqualTo(Double.valueOf(14.484375));
 
-        Size size = labelBoundsProvider.getSize(textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
+        Size size = labelBoundsProvider.getSize(Optional.empty(), textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
         assertThat(size).extracting(Size::getWidth).isEqualTo(Double.valueOf(64.921875));
         assertThat(size).extracting(Size::getHeight).isEqualTo(Double.valueOf(18.3984375));
     }
@@ -64,15 +66,15 @@ public class NodeLabelBoundsProviderTestCases {
         LabelStyle labelStyle = LabelStyle.newLabelStyle().color(LABEL_COLOR).fontSize(FONT_SIZE).iconURL(ICON_URL).build();
         TextBounds textBounds = new TextBoundsProvider().computeBounds(labelStyle, TEST_LABEL);
 
-        Position position = labelBoundsProvider.getPosition(textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
+        Position position = labelBoundsProvider.getPosition(Optional.empty(), textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
         assertThat(position).extracting(Position::getX).isEqualTo(Double.valueOf(42.5390625));
         assertThat(position).extracting(Position::getY).isEqualTo(Double.valueOf(5));
 
-        Position alignment = labelBoundsProvider.getAlignment(textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
+        Position alignment = labelBoundsProvider.getAlignment(Optional.empty(), textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
         assertThat(alignment).extracting(Position::getX).isEqualTo(Double.valueOf(0));
         assertThat(alignment).extracting(Position::getY).isEqualTo(Double.valueOf(14.484375));
 
-        Size size = labelBoundsProvider.getSize(textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
+        Size size = labelBoundsProvider.getSize(Optional.empty(), textBounds, LabelPlacementKind.INSIDE_CENTER.getValue());
         assertThat(size).extracting(Size::getWidth).isEqualTo(Double.valueOf(64.921875));
         assertThat(size).extracting(Size::getHeight).isEqualTo(Double.valueOf(18.3984375));
     }
