@@ -12,11 +12,11 @@
  *******************************************************************************/
 
 import { ContainerModule } from 'inversify';
-import { configureCommand, LocationPostprocessor, MoveMouseListener, TYPES } from 'sprotty';
-import { SiriusMoveCommand } from './siriusMove';
+import { configureCommand, LocationPostprocessor, TYPES } from 'sprotty';
+import { SiriusMoveCommand, SiriusMoveMouseListener } from './siriusMove';
 
 const siriusMoveModule = new ContainerModule((bind, _unbind, isBound) => {
-  bind(TYPES.MouseListener).to(MoveMouseListener);
+  bind(TYPES.MouseListener).to(SiriusMoveMouseListener);
   configureCommand({ bind, isBound }, SiriusMoveCommand);
   bind(LocationPostprocessor).toSelf().inSingletonScope();
   bind(TYPES.IVNodePostprocessor).toService(LocationPostprocessor);
