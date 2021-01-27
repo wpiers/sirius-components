@@ -47,7 +47,6 @@ import {
   LogLevel,
   modelSourceModule,
   MouseListener,
-  // moveModule,
   overrideCommandStackOptions,
   overrideViewerOptions,
   PreRenderedView,
