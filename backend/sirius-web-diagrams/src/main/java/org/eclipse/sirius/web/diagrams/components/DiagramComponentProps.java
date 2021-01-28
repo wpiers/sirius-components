@@ -13,15 +13,11 @@
 package org.eclipse.sirius.web.diagrams.components;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 import org.eclipse.sirius.web.components.IProps;
 import org.eclipse.sirius.web.diagrams.Diagram;
-import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.web.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.web.representations.VariableManager;
@@ -40,21 +36,11 @@ public class DiagramComponentProps implements IProps {
 
     private final List<ViewCreationRequest> viewCreationRequests;
 
-    private final Map<UUID, Position> movedElementIdToNewPositionMap;
-
-    private final Set<UUID> allMovedElementIds;
-
-    private final Optional<Position> optionalStartingPosition;
-
-    public DiagramComponentProps(VariableManager variableManager, DiagramDescription diagramDescription, List<ViewCreationRequest> viewCreationRequests, Optional<Diagram> previousDiagram,
-            Map<UUID, Position> movedElementIdToNewPositionMap, Set<UUID> allMovedElementIds, Optional<Position> optionalStartingPosition) {
+    public DiagramComponentProps(VariableManager variableManager, DiagramDescription diagramDescription, List<ViewCreationRequest> viewCreationRequests, Optional<Diagram> previousDiagram) {
         this.variableManager = Objects.requireNonNull(variableManager);
         this.diagramDescription = Objects.requireNonNull(diagramDescription);
         this.previousDiagram = Objects.requireNonNull(previousDiagram);
         this.viewCreationRequests = List.copyOf(Objects.requireNonNull(viewCreationRequests));
-        this.movedElementIdToNewPositionMap = Map.copyOf(Objects.requireNonNull(movedElementIdToNewPositionMap));
-        this.allMovedElementIds = Set.copyOf(Objects.requireNonNull(allMovedElementIds));
-        this.optionalStartingPosition = Objects.requireNonNull(optionalStartingPosition);
     }
 
     public VariableManager getVariableManager() {
@@ -73,15 +59,4 @@ public class DiagramComponentProps implements IProps {
         return this.viewCreationRequests;
     }
 
-    public Map<UUID, Position> getMovedElementIdToNewPositionMap() {
-        return this.movedElementIdToNewPositionMap;
-    }
-
-    public Set<UUID> getAllMovedElementIds() {
-        return this.allMovedElementIds;
-    }
-
-    public Optional<Position> getOptionalStartingPosition() {
-        return this.optionalStartingPosition;
-    }
 }

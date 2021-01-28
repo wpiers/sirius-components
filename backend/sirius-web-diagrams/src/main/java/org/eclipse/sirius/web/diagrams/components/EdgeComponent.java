@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -60,8 +59,6 @@ public class EdgeComponent implements IComponent {
         EdgeDescription edgeDescription = this.props.getEdgeDescription();
         IEdgesRequestor edgesRequestor = this.props.getEdgesRequestor();
         DiagramRenderingCache cache = this.props.getCache();
-        Set<UUID> movedElementIds = this.props.getMovedElementIds();
-        EdgeRoutingPointsProvider edgeRoutingPointsProvider = new EdgeRoutingPointsProvider();
 
         List<Element> children = new ArrayList<>();
 
@@ -109,18 +106,8 @@ public class EdgeComponent implements IComponent {
                                     .map(Edge::getType)
                                     .orElse("edge:straight"); //$NON-NLS-1$
 
-                            List<Position> routingPoints;
-                            List<Element> labelChildren;
-                            if (movedElementIds.contains(sourceId) || movedElementIds.contains(targetId)) {
-                                routingPoints = edgeRoutingPointsProvider.getRoutingPoints(sourceNode, targetNode);
-                                labelChildren = this.getLabelsChildren(edgeDescription, edgeVariableManager, Optional.empty(), id, routingPoints);
-                            } else {
-                                routingPoints = optionalPreviousEdge
-                                        .map(Edge::getRoutingPoints)
-                                        .orElseGet(()-> edgeRoutingPointsProvider.getRoutingPoints(sourceNode, targetNode));
-                                labelChildren = this.getLabelsChildren(edgeDescription, edgeVariableManager, optionalPreviousEdge, id, routingPoints);
-                            }
-
+                            List<Position> routingPoints = optionalPreviousEdge.map(Edge::getRoutingPoints).orElse(List.of());
+                            List<Element> labelChildren = this.getLabelsChildren(edgeDescription, edgeVariableManager, optionalPreviousEdge, id, routingPoints);
                             EdgeElementProps edgeElementProps = EdgeElementProps.newEdgeElementProps(id)
                                     .type(edgeType)
                                     .descriptionId(edgeDescription.getId())
@@ -152,12 +139,11 @@ public class EdgeComponent implements IComponent {
         List<Element> edgeChildren = new ArrayList<>();
         VariableManager labelVariableManager = edgeVariableManager.createChild();
         labelVariableManager.put(LabelDescription.OWNER_ID, edgeId);
-        EdgeLabelBoundsProvider labelBoundsProvider = new EdgeLabelBoundsProvider(routingPoints);
         Optional<Element> beginLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, Optional.ofNullable(edgeDescription.getBeginLabelDescription()), Edge::getBeginLabel,
-                labelBoundsProvider, LabelPlacementKind.EDGE_BEGIN.getValue());
+                LabelPlacementKind.EDGE_BEGIN.getValue());
         Optional<Element> centerLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, Optional.ofNullable(edgeDescription.getCenterLabelDescription()), Edge::getCenterLabel,
-                labelBoundsProvider, LabelPlacementKind.EDGE_CENTER.getValue());
-        Optional<Element> endLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, Optional.ofNullable(edgeDescription.getEndLabelDescription()), Edge::getEndLabel, labelBoundsProvider,
+                LabelPlacementKind.EDGE_CENTER.getValue());
+        Optional<Element> endLabel = this.getLabel(labelVariableManager, optionalPreviousEdge, Optional.ofNullable(edgeDescription.getEndLabelDescription()), Edge::getEndLabel,
                 LabelPlacementKind.EDGE_END.getValue());
         beginLabel.ifPresent(label -> edgeChildren.add(label));
         centerLabel.ifPresent(label -> edgeChildren.add(label));
@@ -166,10 +152,10 @@ public class EdgeComponent implements IComponent {
     }
 
     private Optional<Element> getLabel(VariableManager labelVariableManager, Optional<Edge> optionalPreviousEdge, Optional<LabelDescription> optionalLabelDescription,
-            Function<Edge, Label> labelGetter, EdgeLabelBoundsProvider labelBoundsProvider, String type) {
+            Function<Edge, Label> labelGetter, String type) {
         Optional<Label> optionalPreviousLabel = optionalPreviousEdge.map(labelGetter);
         return optionalLabelDescription.map(labelDescription -> {
-            LabelComponentProps labelComponentProps = new LabelComponentProps(labelVariableManager, labelDescription, optionalPreviousLabel, labelBoundsProvider, type);
+            LabelComponentProps labelComponentProps = new LabelComponentProps(labelVariableManager, labelDescription, optionalPreviousLabel, type);
             return new Element(LabelComponent.class, labelComponentProps);
         });
     }

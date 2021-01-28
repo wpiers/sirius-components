@@ -14,9 +14,6 @@ package org.eclipse.sirius.web.diagrams.components;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,9 +44,6 @@ public class DiagramComponent implements IComponent {
     public Element render() {
         VariableManager variableManager = this.props.getVariableManager();
         DiagramDescription diagramDescription = this.props.getDiagramDescription();
-        Map<UUID, Position> movedElementIdToNewPositionMap = this.props.getMovedElementIdToNewPositionMap();
-        Set<UUID> allMovedElementIds = this.props.getAllMovedElementIds();
-        NodePositionProvider nodePositionProvider = new NodePositionProvider(this.props.getOptionalStartingPosition(), movedElementIdToNewPositionMap);
         var optionalPreviousDiagram = this.props.getPreviousDiagram();
 
         String label = diagramDescription.getLabelProvider().apply(variableManager);
@@ -66,12 +60,6 @@ public class DiagramComponent implements IComponent {
                     var previousNodes = optionalPreviousDiagram.map(previousDiagram -> diagramElementRequestor.getRootNodes(previousDiagram, nodeDescription))
                             .orElse(List.of());
                     INodesRequestor nodesRequestor = new NodesRequestor(previousNodes);
-                    Optional<Position> parentAbsolutePosition = Optional.of(
-                            Position.newPosition()
-                            .x(0)
-                            .y(0)
-                            .build()
-                            );
                     var nodeComponentProps = NodeComponentProps.newNodeComponentProps()
                             .variableManager(variableManager)
                             .nodeDescription(nodeDescription)
@@ -79,10 +67,7 @@ public class DiagramComponent implements IComponent {
                             .containmentKind(NodeContainmentKind.CHILD_NODE)
                             .cache(cache)
                             .viewCreationRequests(this.props.getViewCreationRequests())
-                            .nodePositionProvider(nodePositionProvider)
                             .parentElementId(diagramId)
-                            .previousParentElement(optionalPreviousDiagram.map(Object.class::cast))
-                            .optionalParentAbsolutePosition(parentAbsolutePosition)
                             .build();
                     return new Element(NodeComponent.class, nodeComponentProps);
                 }).collect(Collectors.toList());
@@ -92,7 +77,7 @@ public class DiagramComponent implements IComponent {
                     var previousEdges = optionalPreviousDiagram.map(previousDiagram -> diagramElementRequestor.getEdges(previousDiagram, edgeDescription))
                             .orElse(List.of());
                     IEdgesRequestor edgesRequestor = new EdgesRequestor(previousEdges);
-                    var edgeComponentProps = new EdgeComponentProps(variableManager, edgeDescription, edgesRequestor, cache, allMovedElementIds);
+                    var edgeComponentProps = new EdgeComponentProps(variableManager, edgeDescription, edgesRequestor, cache);
                     return new Element(EdgeComponent.class, edgeComponentProps);
                 })
                 .collect(Collectors.toList());

@@ -15,7 +15,6 @@ package org.eclipse.sirius.web.diagrams.elements;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.sirius.web.annotations.Immutable;
@@ -54,8 +53,6 @@ public final class NodeElementProps implements IProps {
     private Position position;
 
     private Size size;
-
-    private Optional<Position> optionalAbsolutePosition;
 
     private List<Element> children;
 
@@ -103,10 +100,6 @@ public final class NodeElementProps implements IProps {
         return this.size;
     }
 
-    public Optional<Position> getOptionalAbsolutePosition() {
-        return this.optionalAbsolutePosition;
-    }
-
     public static Builder newNodeElementProps(UUID id) {
         return new Builder(id);
     }
@@ -148,8 +141,6 @@ public final class NodeElementProps implements IProps {
         private Position position;
 
         private Size size;
-
-        private Optional<Position> optionalAbsolutePosition;
 
         private List<Element> children;
 
@@ -202,11 +193,6 @@ public final class NodeElementProps implements IProps {
             return this;
         }
 
-        public Builder optionalAbsolutePosition(Optional<Position> optionalAbsolutePosition) {
-            this.optionalAbsolutePosition = Objects.requireNonNull(optionalAbsolutePosition);
-            return this;
-        }
-
         public Builder children(List<Element> children) {
             this.children = Objects.requireNonNull(children);
             return this;
@@ -225,7 +211,6 @@ public final class NodeElementProps implements IProps {
             nodeElementProps.position = Objects.requireNonNull(this.position);
             nodeElementProps.size = Objects.requireNonNull(this.size);
             nodeElementProps.children = Objects.requireNonNull(this.children);
-            nodeElementProps.optionalAbsolutePosition = Objects.requireNonNull(this.optionalAbsolutePosition);
             return nodeElementProps;
         }
     }

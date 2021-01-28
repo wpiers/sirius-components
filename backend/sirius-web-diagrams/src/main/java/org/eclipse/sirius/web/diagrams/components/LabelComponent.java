@@ -19,8 +19,8 @@ import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.diagrams.Label;
 import org.eclipse.sirius.web.diagrams.LabelStyle;
-import org.eclipse.sirius.web.diagrams.TextBounds;
-import org.eclipse.sirius.web.diagrams.TextBoundsProvider;
+import org.eclipse.sirius.web.diagrams.Position;
+import org.eclipse.sirius.web.diagrams.Size;
 import org.eclipse.sirius.web.diagrams.description.LabelDescription;
 import org.eclipse.sirius.web.diagrams.description.LabelStyleDescription;
 import org.eclipse.sirius.web.diagrams.elements.LabelElementProps;
@@ -44,7 +44,6 @@ public class LabelComponent implements IComponent {
         VariableManager variableManager = this.props.getVariableManager();
         LabelDescription labelDescription = this.props.getLabelDescription();
         Optional<Label> optionalPreviousLabel = this.props.getPreviousLabel();
-        ILabelBoundsProvider labelBoundsProvider = this.props.getLabelBoundsProvider();
         String type = this.props.getType();
 
         String id = labelDescription.getIdProvider().apply(variableManager);
@@ -70,17 +69,13 @@ public class LabelComponent implements IComponent {
                 .underline(underline)
                 .iconURL(iconURL)
                 .build();
-        // @formatter:on
-
-        // @formatter:off
-        TextBounds textBounds = new TextBoundsProvider().computeBounds(labelStyle, text);
 
         LabelElementProps labelElementProps = LabelElementProps.newLabelElementProps(id)
                 .type(type)
                 .text(text)
-                .position(labelBoundsProvider.getPosition(optionalPreviousLabel, textBounds, type))
-                .size(labelBoundsProvider.getSize(optionalPreviousLabel, textBounds, type))
-                .alignment(labelBoundsProvider.getAlignment(optionalPreviousLabel, textBounds, type))
+                .position(optionalPreviousLabel.map(Label::getPosition).orElse(Position.UNDEFINED))
+                .size(optionalPreviousLabel.map(Label::getSize).orElse(Size.UNDEFINED))
+                .alignment(optionalPreviousLabel.map(Label::getAlignment).orElse(Position.UNDEFINED))
                 .style(labelStyle)
                 .build();
         // @formatter:on

@@ -106,8 +106,6 @@ public class NodeComponent implements IComponent {
         NodeDescription nodeDescription = this.props.getNodeDescription();
         NodeContainmentKind containmentKind = this.props.getContainmentKind();
         DiagramRenderingCache cache = this.props.getCache();
-        NodePositionProvider nodePositionProvider = this.props.getNodePositionProvider();
-        NodeSizeProvider nodeSizeProvider = new NodeSizeProvider();
 
         UUID nodeId = optionalPreviousNode.map(Node::getId).orElseGet(() -> this.computeNodeId(targetObjectId));
         Optional<Label> optionalPreviousLabel = optionalPreviousNode.map(Node::getLabel);
@@ -118,11 +116,7 @@ public class NodeComponent implements IComponent {
         IDiagramElementRequestor diagramElementRequestor = new DiagramElementRequestor();
         INodeStyle style = nodeDescription.getStyleProvider().apply(nodeVariableManager);
 
-        Position position = nodePositionProvider.getPosition(nodeId, optionalPreviousNode, this.props.getPreviousParentElement(), nodeSizeProvider, style);
-
         //@formatter:off
-        Optional<Position> absolutePosition = this.props.getOptionalParentAbsolutePosition()
-                .map(parentAbsolutePosition -> this.computeAbsolutePosition(position, parentAbsolutePosition));
         var borderNodes = nodeDescription.getBorderNodeDescriptions()
                 .stream()
                 .map(borderNodeDescription -> {
@@ -138,9 +132,6 @@ public class NodeComponent implements IComponent {
                             .cache(cache)
                             .viewCreationRequests(this.props.getViewCreationRequests())
                             .parentElementId(nodeId)
-                            .nodePositionProvider(nodePositionProvider)
-                            .previousParentElement(optionalPreviousNode.map(Object.class::cast))
-                            .optionalParentAbsolutePosition(absolutePosition)
                             .build();
                     return new Element(NodeComponent.class, nodeComponentProps);
                     })
@@ -160,21 +151,15 @@ public class NodeComponent implements IComponent {
                     .cache(cache)
                     .viewCreationRequests(this.props.getViewCreationRequests())
                     .parentElementId(nodeId)
-                    .nodePositionProvider(nodePositionProvider)
-                    .previousParentElement(optionalPreviousNode.map(Object.class::cast))
-                    .optionalParentAbsolutePosition(absolutePosition)
                     .build();
             return new Element(NodeComponent.class, nodeComponentProps);
         })
                 .collect(Collectors.toList());
         //@formatter:on
 
-        Size size = optionalPreviousNode.map(Node::getSize).orElseGet(() -> nodeSizeProvider.getSize(style, childNodes));
-        NodeLabelBoundsProvider labelBoundsProvider = new NodeLabelBoundsProvider(type, size);
         LabelDescription labelDescription = nodeDescription.getLabelDescription();
         nodeVariableManager.put(LabelDescription.OWNER_ID, nodeId);
-        LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, labelBoundsProvider,
-                LabelPlacementKind.INSIDE_CENTER.getValue());
+        LabelComponentProps labelComponentProps = new LabelComponentProps(nodeVariableManager, labelDescription, optionalPreviousLabel, LabelPlacementKind.INSIDE_CENTER.getValue());
         Element labelElement = new Element(LabelComponent.class, labelComponentProps);
         List<Element> nodeChildren = new ArrayList<>();
         nodeChildren.add(labelElement);
@@ -189,10 +174,9 @@ public class NodeComponent implements IComponent {
                 .descriptionId(nodeDescription.getId())
                 .borderNode(containmentKind == NodeContainmentKind.BORDER_NODE)
                 .style(style)
-                .position(position)
-                .size(size)
+                .position(optionalPreviousNode.map(Node::getPosition).orElse(Position.UNDEFINED))
+                .size(optionalPreviousNode.map(Node::getSize).orElse(Size.UNDEFINED))
                 .children(nodeChildren)
-                .optionalAbsolutePosition(absolutePosition)
                 .build();
         // @formatter:on
         return new Element(NodeElementProps.TYPE, nodeElementProps);
@@ -205,15 +189,6 @@ public class NodeComponent implements IComponent {
 
         String rawIdentifier = parentElementId.toString() + containmentKind.toString() + nodeDescription.getId().toString() + targetObjectId;
         return UUID.nameUUIDFromBytes(rawIdentifier.getBytes());
-    }
-
-    private Position computeAbsolutePosition(Position currentNodeRelativePosition, Position parentNodeAbsolutePosition) {
-        // @formatter:off
-        return Position.newPosition()
-                .x(parentNodeAbsolutePosition.getX() + currentNodeRelativePosition.getX())
-                .y(parentNodeAbsolutePosition.getY() + currentNodeRelativePosition.getY())
-                .build();
-        // @formatter:on
     }
 
 }

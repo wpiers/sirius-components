@@ -10,11 +10,8 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.sirius.web.diagrams.components;
+package org.eclipse.sirius.web.diagrams.layout.incremental.provider;
 
-import java.util.List;
-
-import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.diagrams.INodeStyle;
 import org.eclipse.sirius.web.diagrams.ImageNodeStyle;
 import org.eclipse.sirius.web.diagrams.ImageNodeStyleSizeProvider;
@@ -22,13 +19,13 @@ import org.eclipse.sirius.web.diagrams.ImageSizeProvider;
 import org.eclipse.sirius.web.diagrams.Size;
 
 /**
- * Provides the Size to apply to a new node.
+ * Provides the minimal size of a Node.
  *
- * @author fbarbin
+ * @author wpiers
  */
 public class NodeSizeProvider {
 
-    public Size getSize(INodeStyle style, List<Element> childElements) {
+    public Size getSize(INodeStyle style) {
         if (style instanceof ImageNodeStyle) {
             return new ImageNodeStyleSizeProvider(new ImageSizeProvider()).getSize((ImageNodeStyle) style);
         }
@@ -39,4 +36,5 @@ public class NodeSizeProvider {
                 .build();
         // @formatter:on
     }
+
 }

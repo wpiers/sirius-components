@@ -12,7 +12,12 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.diagrams.layout.api;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.eclipse.sirius.web.diagrams.Diagram;
+import org.eclipse.sirius.web.diagrams.Position;
 
 /**
  * Implementation of this interface will layout the given diagram.
@@ -21,4 +26,6 @@ import org.eclipse.sirius.web.diagrams.Diagram;
  */
 public interface ILayoutService {
     Diagram layout(Diagram diagram);
+
+    Diagram incrementalLayout(Diagram newDiagram, Map<UUID, Position> movedElementIDToNewPositionMap, Optional<Position> optionalStartingPosition);
 }

@@ -60,6 +60,15 @@ Although its source or target can have moved, directly or indirectly. So an edge
 
 In the following sections, when mentioning that a metric has been set, it means that it is set to the correct value, regardless of its origin: the previous value, a new computation, a position from the moved elements data.
 
+=== Computation order and interdependencies
+
+When computing the layout, a decision to move an element can change the position of its siblings, the size of its container, the bendpoints of the linked edges... each change is a factor that can update the whole layout.
+ELK manage this well, with long-time studied theories in application. That's how it come with solutions with no overlap, minimal crosses between edges and so on.
+
+The purpose of the incremental layout is quite different as another factor comes at play: ergonomy.
+We want the user not to be disturbed by the changes, i.e. the new diagram must look like the previous one. The only changes shown must be strongly related to the performed actions.
+The consequence of that is for instance when computing edges: the "keep crossings minimal" injonctions is no longer relevant, what we want here is to make the minimal changes to the bendpoints list to make the edge connected with the new positions, and still respect the edge layout mode.
+
 === Layout computation
 
 The underlying sections describes the layout computation steps, in order. This order is relevant as the edge bendpoints cannot be computed before the nodes positions for instance.

@@ -12,8 +12,12 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.diagrams.layout;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
 import org.eclipse.elk.core.IGraphLayoutEngine;
@@ -25,8 +29,12 @@ import org.eclipse.elk.core.util.ElkUtil;
 import org.eclipse.elk.graph.ElkGraphElement;
 import org.eclipse.elk.graph.ElkNode;
 import org.eclipse.sirius.web.diagrams.Diagram;
+import org.eclipse.sirius.web.diagrams.Position;
 import org.eclipse.sirius.web.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.web.diagrams.layout.api.ILayoutService;
+import org.eclipse.sirius.web.diagrams.layout.incremental.IncrementalLayoutEngine;
+import org.eclipse.sirius.web.diagrams.layout.incremental.data.DiagramLayoutData;
+import org.eclipse.sirius.web.diagrams.layout.incremental.data.ILayoutData;
 import org.eclipse.sirius.web.services.api.representations.IRepresentationDescriptionService;
 import org.springframework.stereotype.Service;
 
@@ -75,6 +83,22 @@ public class LayoutService implements ILayoutService {
 
         Map<String, ElkGraphElement> id2ElkGraphElements = convertedDiagram.getId2ElkGraphElements();
         Diagram layoutedDiagram = this.layoutedDiagramProvider.getLayoutedDiagram(diagram, elkDiagram, id2ElkGraphElements);
+
+        return layoutedDiagram;
+    }
+
+    @Override
+    public Diagram incrementalLayout(Diagram newDiagram, Map<UUID, Position> movedElementsMap, Optional<Position> optionalStartingPosition) {
+        Map<String, Position> newPositionsMap = new HashMap<>();
+        for (Entry<UUID, Position> entry : movedElementsMap.entrySet()) {
+            newPositionsMap.put(entry.getKey().toString(), entry.getValue());
+        }
+        org.eclipse.sirius.web.diagrams.layout.incremental.ConvertedDiagram convertedDiagram = new org.eclipse.sirius.web.diagrams.layout.incremental.DiagramConverter().convert(newDiagram);
+
+        DiagramLayoutData diagramLayoutData = convertedDiagram.getDiagramLayoutData();
+        new IncrementalLayoutEngine(newPositionsMap, Map.of(), optionalStartingPosition).layout(diagramLayoutData);
+        Map<String, ILayoutData> id2LayoutData = convertedDiagram.getId2LayoutData();
+        Diagram layoutedDiagram = new org.eclipse.sirius.web.diagrams.layout.incremental.LayoutedDiagramProvider().getLayoutedDiagram(newDiagram, diagramLayoutData, id2LayoutData);
 
         return layoutedDiagram;
     }
