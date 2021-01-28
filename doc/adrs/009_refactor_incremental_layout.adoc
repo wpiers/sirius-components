@@ -48,13 +48,15 @@ Some will be relevant later and can be ignored for now :
 === Incremental principle
 
 Obviously the incremental layout does not need to recompute every metric. The rules leading to the computation of a position/size of a node/label are quite simple:
-* the element has no position/size
-* the element has been moved
+
+- the element has no position/size
+- the element has been moved
 
 For an edge and its bendpoints, the no position/size rule also applies, but edges cannot be moved.
 Although its source or target can have moved, directly or indirectly. So an edge must be layouted if :
-* the source/target has moved
-* one of the containers of the source/target has moved
+
+- the source/target has moved
+- one of the containers of the source/target has moved
 
 In the following sections, when mentioning that a metric has been set, it means that it is set to the correct value, regardless of its origin: the previous value, a new computation, a position from the moved elements data.
 
