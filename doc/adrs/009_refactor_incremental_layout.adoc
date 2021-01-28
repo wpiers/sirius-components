@@ -1,0 +1,128 @@
+= ADR-009 - Refactor incremental layout
+
+== Context
+
+Following ADR-008, we implemented an incremental layout applied on each refresh.
+This algorithm follows the diagram rendering and adds layout informations on the fly, gathered either by:
+- previous layout informations
+- informations gathered from frontend mutations: moves, creation tools
+This implementation is straight-forward and simple but prevents us from anticipating crucial data.
+For instance: which size a container must have to hold all of its children, when some of them have been moved/resized.
+
+== Decision
+
+=== Process
+
+To be achieved correctly, the incremental layout must be aware of:
+
+- the whole diagram structure
+- the previous diagram layout data
+- the volatile layout data, gathered from the frontend mutations and meant to be used for a single rendering
+
+The first two items can be provided to us by the current rendering, which creates the diagram structure according to the VSM. The implementation made for ADR-008 showed that we can easily embed the previous layout data into it.
+This will constitute the first step of the rendering.
+
+The second step will consist on calling the incremental layout on the previously obtained diagram, the same way we used to call ELK automatic layout, to produce the final diagram with the layout data correctly set according to all the constraints, reconciled from the previous state with the volatile data.
+
+=== Layout Data
+
+The layout must produce the following data to achieve the incremental rendering:
+
+- the position of each node, label
+- the size of each node, label
+- the position of each bendpoint
+
+=== Input informations
+
+Several volatile layout informations must be taken in account when computing the layout. Some are already used:
+
+- the position of a node that has just been created
+- the new position of some nodes that have been moved
+
+Some will be relevant later and can be ignored for now :
+
+- the new size of a resized node
+- the new position of a moved label
+- the new position of a moved bendpoint
+
+=== Incremental principle
+
+Obviously the incremental layout does not need to recompute every metric. The rules leading to the computation of a position/size of a node/label are quite simple:
+* the element has no position/size
+* the element has been moved
+
+For an edge and its bendpoints, the no position/size rule also applies, but edges cannot be moved.
+Although its source or target can have moved, directly or indirectly. So an edge must be layouted if :
+* the source/target has moved
+* one of the containers of the source/target has moved
+
+In the following sections, when mentioning that a metric has been set, it means that it is set to the correct value, regardless of its origin: the previous value, a new computation, a position from the moved elements data.
+
+=== Layout computation
+
+The underlying sections describes the layout computation steps, in order. This order is relevant as the edge bendpoints cannot be computed before the nodes positions for instance.
+
+==== Node labels sizes and positions
+
+The Node labels size/positions can be set regardless of the other data as they are relative to the designated element.
+It is better to compute them first anyway, because the label size could infer the size of an element.
+It is not the case yet.
+
+==== Node sizes and positions
+
+Node sizes and positions are sensitive as they can depend of the own node content, which consequently needs to be calculated first.
+So the first step will be to set all sizes of the leaf nodes, i.e. nodes without content.
+The next step consists on considering all nodes, starting from the deepest, and to set their positions in their containers according to their siblings.
+Once all the positions & sizes of the child of a container has been set, we can set its size accordingly.
+We can then proceed and compute the position & sizes of the parent elements.
+
+TODO pseudo-code algorithm
+	
+==== Edge bendpoints
+
+The edge bendpoints consists on two mandatory bendpoints, the source & target anchors, and optional intermediary bendpoints. There are all stored as a whole in a list of positions for a given edge.
+As this is only a refactoring, that does not intend to solve all the issues at all, a first version can simply match what we had following ADR-008:
+
+- if an edge has moved, all intermediary bendpoints are removed
+- no intermediary bendpoints are recomputed
+- source & target anchor points to the middle of a given element
+
+==== Edge label sizes and positions
+
+As for the bendpoints, we will match the previous layout provided by ADR-008.
+
+=== Layouted Diagram production
+
+A provider similar to org.eclipse.sirius.web.diagrams.layout.LayoutedDiagramProvider will produce the final copy, using the rendered diagram & the computed layout data.
+
+```
+	Diagram getLayoutedDiagram(
+		Diagram diagram, 
+		Map<String, Position> ids2Positions, 
+		Map<String, Size> ids2Sizes, 
+		Map<String, List<Position>> ids2Bendpoints
+	);
+```
+
+NOTE: we could use a merged size+position "Bounds" POJO there to avoid one parameter.
+
+== Status
+
+Proposed.
+
+== Consequences
+
+=== Current implementation adaptation
+
+The DiagramCreationService will have to call the new layout in the end of its refresh phase, using the rendered diagram (with the old layout) and providing all the relevant input informations.
+
+=== Implementation of new features
+
+This refactoring will fix existing features like "offline" node creation (i.e. creation of nodes, containers, before opening a diagram).
+It will also provide a better start to implement new features such as:
+- labels computation improvement
+- bendpoints computation improvement
+- resize
+- allowing move of nodes from a container to another
+- bendpoints edition
+
