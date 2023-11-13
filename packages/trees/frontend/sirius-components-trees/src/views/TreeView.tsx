@@ -94,6 +94,7 @@ export const TreeView = ({
   showToolBar,
   enableMultiSelection,
   treeOptions,
+  converter,
 }: TreeViewComponentProps) => {
   const styles = useTreeViewStyles();
 
@@ -244,7 +245,7 @@ export const TreeView = ({
         {tree ? (
           <Tree
             editingContextId={editingContextId}
-            tree={tree}
+            tree={converter.convert(tree)}
             onExpand={onExpand}
             onExpandAll={onExpandAll}
             selection={selection}

@@ -11,8 +11,19 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import { WorkbenchViewComponentProps } from '@eclipse-sirius/sirius-components-core';
+import { useExplorerViewConfiguration } from './ExplorerViewConfiguration';
 import { TreeView } from './TreeView';
 
-export const ExplorerView = (props: WorkbenchViewComponentProps) => (
-  <TreeView {...props} treeId="explorer://" showToolBar={true} enableMultiSelection={true} treeOptions={undefined} />
-);
+export const ExplorerView = (props: WorkbenchViewComponentProps) => {
+  const { converter } = useExplorerViewConfiguration();
+  return (
+    <TreeView
+      {...props}
+      treeId="explorer://"
+      showToolBar={true}
+      enableMultiSelection={true}
+      treeOptions={undefined}
+      converter={converter}
+    />
+  );
+};
