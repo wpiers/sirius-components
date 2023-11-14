@@ -79,6 +79,7 @@ export const FormBasedView = ({
   setSelection,
   readOnly,
   subscriptionName,
+  converter,
 }: FormBasedViewProps) => {
   const classes = useFormBasedViewStyles();
   const [{ value, context }, dispatch] = useMachine<FormBasedViewContext, FormBasedViewEvent>(formBasedViewMachine);
@@ -155,7 +156,7 @@ export const FormBasedView = ({
     content = (
       <Form
         editingContextId={editingContextId}
-        form={form}
+        form={converter.convert(form)}
         widgetSubscriptions={widgetSubscriptions}
         setSelection={setSelection}
         readOnly={readOnly}

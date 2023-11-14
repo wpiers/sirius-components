@@ -11,8 +11,10 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import { WorkbenchViewComponentProps } from '@eclipse-sirius/sirius-components-core';
+import { useDetailsViewConfiguration } from './DetailsViewConfiguration';
 import { FormBasedView } from './FormBasedView';
 
-export const DetailsView = (props: WorkbenchViewComponentProps) => (
-  <FormBasedView {...props} subscriptionName="propertiesEvent" />
-);
+export const DetailsView = (props: WorkbenchViewComponentProps) => {
+  const { converter } = useDetailsViewConfiguration();
+  return <FormBasedView {...props} subscriptionName="propertiesEvent" converter={converter} />;
+};
