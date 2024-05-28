@@ -11,9 +11,12 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import {
+  ComponentExtension,
   ConfirmationDialogContextProvider,
+  DataExtension,
   ExtensionProvider,
   ExtensionRegistry,
+  ExtensionRegistryMergeStrategy,
   RepresentationPathContext,
   ServerContext,
   WorkbenchViewContribution,
@@ -59,10 +62,24 @@ const style = {
   minHeight: '100vh',
 };
 
+class DefaultExtensionRegistryMergeStrategy implements ExtensionRegistryMergeStrategy {
+  public mergeComponentExtensions(
+    _: string,
+    existingValues: ComponentExtension<any>[],
+    newValues: ComponentExtension<any>[]
+  ): ComponentExtension<any>[] {
+    return [...existingValues, ...newValues];
+  }
+  public mergeDataExtensions(_1: string, _2: DataExtension<any>, newValue: DataExtension<any>): DataExtension<any> {
+    return newValue;
+  }
+}
+
 export const SiriusWebApplication = ({
   httpOrigin,
   wsOrigin,
   extensionRegistry,
+  extensionRegistryMergeStrategy,
   theme,
   children,
 }: SiriusWebApplicationProps) => {
@@ -117,10 +134,19 @@ export const SiriusWebApplication = ({
   ];
 
   const internalExtensionRegistry = new ExtensionRegistry();
-  internalExtensionRegistry.addComponent(workbenchMainAreaExtensionPoint, { Component: OnboardArea });
-  internalExtensionRegistry.putData(workbenchViewContributionExtensionPoint, { data: workbenchViewContributions });
+  internalExtensionRegistry.addComponent(workbenchMainAreaExtensionPoint, {
+    identifier: 'sw_onboard',
+    Component: OnboardArea,
+  });
+  internalExtensionRegistry.putData(workbenchViewContributionExtensionPoint, {
+    identifier: 'sw_workbenchView',
+    data: workbenchViewContributions,
+  });
   if (extensionRegistry) {
-    internalExtensionRegistry.addAll(extensionRegistry);
+    internalExtensionRegistry.addAll(
+      extensionRegistry,
+      extensionRegistryMergeStrategy ? extensionRegistryMergeStrategy : new DefaultExtensionRegistryMergeStrategy()
+    );
   }
 
   return (
