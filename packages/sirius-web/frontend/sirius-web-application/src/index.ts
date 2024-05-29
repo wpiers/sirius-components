@@ -30,7 +30,9 @@ export {
 export { type NavigationBarIconProps, type NavigationBarMenuProps } from './navigationBar/NavigationBar.types';
 export {
   navigationBarIconExtensionPoint,
+  navigationBarLeftContributionExtensionPoint,
   navigationBarMenuExtensionPoint,
+  navigationBarRightContributionExtensionPoint,
 } from './navigationBar/NavigationBarExtensionPoints';
 export { routerExtensionPoint } from './router/RouterExtensionPoints';
 export { projectActionButtonMenuItemExtensionPoint } from './views/project-browser/list-projects-area/ProjectActionButtonExtensionPoints';
