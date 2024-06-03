@@ -36,3 +36,4 @@ export { routerExtensionPoint } from './router/RouterExtensionPoints';
 export { projectActionButtonMenuItemExtensionPoint } from './views/project-browser/list-projects-area/ProjectActionButtonExtensionPoints';
 export { type ProjectRowProps } from './views/project-browser/list-projects-area/ProjectRow.types';
 export { projectsTableRowExtensionPoint } from './views/project-browser/list-projects-area/ProjectsTableExtensionPoints';
+export * from './views/project-settings/ProjectSettingsViewExtensionPoints';
