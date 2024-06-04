@@ -61,10 +61,32 @@ const projectEventSubscription = gql`
 `;
 
 const useEditProjectViewNavbarStyles = makeStyles((theme) => ({
+  toolbar: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
   center: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  left: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  right: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  CUSTOM_EXT: {
+    marginRight: 'auto',
+  },
+  CUSTOM_EXT_HIDDEN: {
+    visibility: 'hidden',
   },
   title: {
     marginRight: theme.spacing(2),
@@ -163,24 +185,38 @@ export const EditProjectNavbar = ({ project }: EditProjectNavbarProps) => {
       modal = <DeleteProjectModal project={project} onSuccess={onProjectDeleted} onCancel={onCloseModal} />;
     }
   }
+  let customExtension = (
+    <div className={classes.CUSTOM_EXT}>
+      <Typography>EditProjectNavbar_LEFT</Typography>
+    </div>
+  );
+  let hiddenCustomExtension = (
+    <div className={classes.CUSTOM_EXT_HIDDEN}>
+      <Typography>EditProjectNavbar_LEFT</Typography>
+    </div>
+  );
   return (
     <>
       <NavigationBar>
-        <div className={classes.center}>
-          <Typography variant="h6" noWrap className={classes.title} data-testid={`navbar-${projectName}`}>
-            {projectName}
-          </Typography>
-          <IconButton
-            className={classes.onDarkBackground}
-            edge="start"
-            aria-label="more"
-            aria-controls="more-menu"
-            aria-haspopup="true"
-            onClick={onMoreClick}
-            color="inherit"
-            data-testid="more">
-            <MoreVertIcon />
-          </IconButton>
+        <div className={classes.toolbar}>
+          <div className={classes.left}>{customExtension}</div>
+          <div className={classes.center}>
+            <Typography variant="h6" noWrap className={classes.title} data-testid={`navbar-${projectName}`}>
+              {projectName}
+            </Typography>
+            <IconButton
+              className={classes.onDarkBackground}
+              edge="start"
+              aria-label="more"
+              aria-controls="more-menu"
+              aria-haspopup="true"
+              onClick={onMoreClick}
+              color="inherit"
+              data-testid="more">
+              <MoreVertIcon />
+            </IconButton>
+          </div>
+          <div className={classes.right}>{hiddenCustomExtension}</div>
         </div>
       </NavigationBar>
 
