@@ -17,6 +17,8 @@ export interface EditProjectNavbarProps {
   project: Project;
 }
 
+export interface EditProjectNavbarSubtitleProps {}
+
 export interface GQLProjectEventSubscription {
   projectEvent: GQLProjectEventPayload;
 }
