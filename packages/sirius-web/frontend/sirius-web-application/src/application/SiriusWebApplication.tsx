@@ -53,6 +53,12 @@ import { OnboardArea } from '../onboarding/OnboardArea';
 import { RepresentationContextProvider } from '../representations/RepresentationContextProvider';
 import { Router } from '../router/Router';
 import { siriusWebTheme as defaultTheme } from '../theme/siriusWebTheme';
+import { createProjectAreaCardExtensionPoint } from '../views/project-browser/create-projects-area/CreateProjectAreaExtensionPoints';
+import {
+  NewProjectCard,
+  ShowAllTemplatesCard,
+  UploadProjectCard,
+} from '../views/project-browser/create-projects-area/ProjectTemplateCard';
 import {
   ProjectSettingTabContribution,
   projectSettingsTabExtensionPoint,
@@ -150,10 +156,25 @@ export const SiriusWebApplication = ({
     identifier: 'sw_onboard',
     Component: OnboardArea,
   });
+
+  internalExtensionRegistry.addComponent(createProjectAreaCardExtensionPoint, {
+    identifier: 'sw_createProjectAreaCard_new',
+    Component: NewProjectCard,
+  });
+  internalExtensionRegistry.addComponent(createProjectAreaCardExtensionPoint, {
+    identifier: 'sw_createProjectAreaCard_upload',
+    Component: UploadProjectCard,
+  });
+  internalExtensionRegistry.addComponent(createProjectAreaCardExtensionPoint, {
+    identifier: 'sw_createProjectAreaCard_templates',
+    Component: ShowAllTemplatesCard,
+  });
+
   internalExtensionRegistry.putData(workbenchViewContributionExtensionPoint, {
     identifier: 'sw_workbenchView',
     data: workbenchViewContributions,
   });
+
   internalExtensionRegistry.putData(projectSettingsTabExtensionPoint, {
     identifier: 'sw_projectSettingsTab',
     data: projectSettingsTabContributions,

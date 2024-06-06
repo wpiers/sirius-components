@@ -23,9 +23,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { ProjectTemplateCardProps, ShowAllTemplatesCardProps } from './ProjectTemplateCard.types';
+import { CreateProjectAreaState } from './CreateProjectArea.types';
+import { ProjectTemplateCardProps } from './ProjectTemplateCard.types';
+import { ProjectTemplatesModal } from './ProjectTemplatesModal';
 
 const useProjectTemplateStyles = makeStyles((theme) => ({
   projectTemplateCard: {
@@ -159,22 +161,34 @@ export const UploadProjectCard = () => {
   );
 };
 
-export const ShowAllTemplatesCard = ({ onClick }: ShowAllTemplatesCardProps) => {
+export const ShowAllTemplatesCard = () => {
   const classes = useProjectCardStyles();
+  const [state, setState] = useState<CreateProjectAreaState>({
+    page: 0,
+    limit: 3,
+    runningTemplate: null,
+    modalDisplayed: null,
+  });
+  const showAllTemplatesModal = () => setState((prevState) => ({ ...prevState, modalDisplayed: 'SHOW_ALL_TEMPLATES' }));
+  const closeModal = () => setState((prevState) => ({ ...prevState, modalDisplayed: null }));
   return (
-    <Button onClick={onClick} data-testid="show-all-templates">
-      <Card className={classes.projectCard}>
-        <CardContent className={classes.showAllTemplatesCardContent}>
-          <MoreHorizIcon className={classes.projectCardIcon} htmlColor="white" />
-        </CardContent>
-        <CardActions className={classes.projectCardActions}>
-          <Tooltip title={'Show all templates'}>
-            <Typography variant="h5" className={classes.projectCardLabel}>
-              Show all templates
-            </Typography>
-          </Tooltip>
-        </CardActions>
-      </Card>
-    </Button>
+    <>
+      <Button onClick={showAllTemplatesModal} data-testid="show-all-templates">
+        <Card className={classes.projectCard}>
+          <CardContent className={classes.showAllTemplatesCardContent}>
+            <MoreHorizIcon className={classes.projectCardIcon} htmlColor="white" />
+          </CardContent>
+          <CardActions className={classes.projectCardActions}>
+            <Tooltip title={'Show all templates'}>
+              <Typography variant="h5" className={classes.projectCardLabel}>
+                Show all templates
+              </Typography>
+            </Tooltip>
+          </CardActions>
+        </Card>
+      </Button>
+
+      {state.modalDisplayed === 'SHOW_ALL_TEMPLATES' ? <ProjectTemplatesModal onClose={closeModal} /> : null}
+    </>
   );
 };

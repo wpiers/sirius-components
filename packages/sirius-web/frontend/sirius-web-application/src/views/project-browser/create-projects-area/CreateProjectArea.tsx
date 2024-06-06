@@ -11,13 +11,14 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
+import { useComponents } from '@eclipse-sirius/sirius-components-core';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { CreateProjectAreaProps, CreateProjectAreaState } from './CreateProjectArea.types';
-import { NewProjectCard, ProjectTemplateCard, ShowAllTemplatesCard, UploadProjectCard } from './ProjectTemplateCard';
-import { ProjectTemplatesModal } from './ProjectTemplatesModal';
+import { createProjectAreaCardExtensionPoint } from './CreateProjectAreaExtensionPoints';
+import { ProjectTemplateCard } from './ProjectTemplateCard';
 import { redirectUrlFromTemplate } from './redirectUrlFromTemplate';
 import { useCreateProjectFromTemplate } from './useCreateProjectFromTemplate';
 import { useProjectTemplates } from './useProjectTemplates';
@@ -53,6 +54,7 @@ export const CreateProjectArea = ({}: CreateProjectAreaProps) => {
 
   const { data } = useProjectTemplates(state.page, state.limit);
   const projectTemplates: GQLProjectTemplate[] = data?.viewer.projectTemplates.edges.map((edge) => edge.node) ?? [];
+  const createProjectAreaCards = useComponents(createProjectAreaCardExtensionPoint);
 
   const { createProjectFromTemplate, loading, projectCreatedFromTemplate } = useCreateProjectFromTemplate();
 
@@ -62,9 +64,6 @@ export const CreateProjectArea = ({}: CreateProjectAreaProps) => {
       setState((prevState) => ({ ...prevState, runningTemplate: template }));
     }
   };
-
-  const showAllTemplatesModal = () => setState((prevState) => ({ ...prevState, modalDisplayed: 'SHOW_ALL_TEMPLATES' }));
-  const closeModal = () => setState((prevState) => ({ ...prevState, modalDisplayed: null }));
 
   const redirectUrl: string | null = projectCreatedFromTemplate
     ? redirectUrlFromTemplate(projectCreatedFromTemplate)
@@ -89,12 +88,11 @@ export const CreateProjectArea = ({}: CreateProjectAreaProps) => {
               key={template.id}
             />
           ))}
-          <NewProjectCard />
-          <UploadProjectCard />
-          <ShowAllTemplatesCard onClick={showAllTemplatesModal} />
+          {createProjectAreaCards.map(({ Component: Card }, index) => (
+            <Card key={index} />
+          ))}
         </div>
       </div>
-      {state.modalDisplayed === 'SHOW_ALL_TEMPLATES' ? <ProjectTemplatesModal onClose={closeModal} /> : null}
     </>
   );
 };
