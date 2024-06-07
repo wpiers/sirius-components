@@ -11,13 +11,13 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
+import { useComponents } from '@eclipse-sirius/sirius-components-core';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import { SwapHoriz as SwapHorizIcon } from '@material-ui/icons';
-import React from 'react';
 import { TreeFiltersMenu } from '../views/TreeFiltersMenu';
 import { TreeToolBarProps } from './TreeToolBar.types';
-import { TreeToolBarContributionComponentProps } from './TreeToolBarContribution.types';
+import { treeToolbarContributionExtensionPoint } from './TreeToolbarExtensionPoints';
 
 const useTreeToolbarStyles = makeStyles((theme) => ({
   toolbar: {
@@ -36,11 +36,11 @@ const useTreeToolbarStyles = makeStyles((theme) => ({
 
 export const TreeToolBar = ({
   editingContextId,
+  treeId,
   onSynchronizedClick,
   synchronized,
   treeFilters,
   onTreeFilterMenuItemClick,
-  treeToolBarContributionComponents,
   readOnly,
 }: TreeToolBarProps) => {
   const classes = useTreeToolbarStyles();
@@ -53,18 +53,14 @@ export const TreeToolBar = ({
   const preferenceButtonSynchronizeTitle = synchronized
     ? 'Disable synchronization with representation'
     : 'Enable synchronization with representation';
+
+  const treeToolBarContributionComponents = useComponents(treeToolbarContributionExtensionPoint);
   return (
     <>
       <div className={classes.toolbar}>
-        {treeToolBarContributionComponents.map((component, index) => {
-          const props: TreeToolBarContributionComponentProps = {
-            editingContextId: editingContextId,
-            disabled: readOnly,
-            key: index.toString(),
-          };
-          const element = React.createElement(component, props);
-          return element;
-        })}
+        {treeToolBarContributionComponents.map(({ Component: Contribution }, index) => (
+          <Contribution key={index} treeId={treeId} editingContextId={editingContextId} disabled={readOnly} />
+        ))}
         {treeFiltersMenu}
         <IconButton
           color="inherit"

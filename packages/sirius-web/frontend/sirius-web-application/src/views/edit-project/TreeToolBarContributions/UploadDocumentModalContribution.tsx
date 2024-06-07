@@ -11,7 +11,7 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
-import { TreeToolBarContributionComponentProps } from '@eclipse-sirius/sirius-components-trees';
+import { TreeToolBarContributionProps } from '@eclipse-sirius/sirius-components-trees';
 import IconButton from '@material-ui/core/IconButton';
 import { Publish as PublishIcon } from '@material-ui/icons';
 
@@ -20,10 +20,7 @@ import { UploadDocumentModal } from '../../../modals/upload-document/UploadDocum
 
 type Modal = 'UploadDocument';
 
-export const UploadDocumentModalContribution = ({
-  disabled,
-  editingContextId,
-}: TreeToolBarContributionComponentProps) => {
+export const UploadDocumentModalContribution = ({ disabled, editingContextId }: TreeToolBarContributionProps) => {
   const [modal, setModal] = useState<Modal | null>(null);
 
   const onFinished = () => {

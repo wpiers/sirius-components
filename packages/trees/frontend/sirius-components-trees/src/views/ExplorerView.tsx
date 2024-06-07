@@ -12,10 +12,8 @@
  *******************************************************************************/
 import { WorkbenchViewComponentProps } from '@eclipse-sirius/sirius-components-core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TreeToolBar } from '../toolbar/TreeToolBar';
-import { TreeToolBarContext } from '../toolbar/TreeToolBarContext';
-import { TreeToolBarContextValue } from '../toolbar/TreeToolBarContext.types';
 import { FilterBar } from '../trees/FilterBar';
 import { ExplorerViewState, TreeFilter } from './ExplorerView.types';
 import { useExplorerViewConfiguration } from './ExplorerViewConfiguration';
@@ -34,6 +32,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const explorerTreeId = 'explorer://';
+
 export const ExplorerView = ({ editingContextId, readOnly }: WorkbenchViewComponentProps) => {
   const styles = useStyles();
   const { converter } = useExplorerViewConfiguration();
@@ -46,9 +46,6 @@ export const ExplorerView = ({ editingContextId, readOnly }: WorkbenchViewCompon
     treeFilters: [],
   };
   const [state, setState] = useState<ExplorerViewState>(initialState);
-  const treeToolBarContributionComponents = useContext<TreeToolBarContextValue>(TreeToolBarContext).map(
-    (contribution) => contribution.props.component
-  );
 
   const { loading, treeFilters } = useTreeFilters(editingContextId, 'explorer://');
 
@@ -116,6 +113,7 @@ export const ExplorerView = ({ editingContextId, readOnly }: WorkbenchViewCompon
     <div className={styles.treeView} ref={treeElement}>
       <TreeToolBar
         editingContextId={editingContextId}
+        treeId={explorerTreeId}
         readOnly={readOnly}
         onSynchronizedClick={() =>
           setState((prevState) => {
@@ -129,14 +127,13 @@ export const ExplorerView = ({ editingContextId, readOnly }: WorkbenchViewCompon
             return { ...prevState, treeFilters };
           })
         }
-        treeToolBarContributionComponents={treeToolBarContributionComponents}
       />
       <div className={styles.treeContent}>
         {filterBar}
         <TreeView
           editingContextId={editingContextId}
           readOnly={readOnly}
-          treeId={'explorer://'}
+          treeId={explorerTreeId}
           enableMultiSelection={true}
           synchronizedWithSelection={state.synchronizedWithSelection}
           activeFilterIds={activeTreeFilterIds}

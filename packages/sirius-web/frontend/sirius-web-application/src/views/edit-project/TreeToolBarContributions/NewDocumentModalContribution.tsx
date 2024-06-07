@@ -10,7 +10,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-import { TreeToolBarContributionComponentProps } from '@eclipse-sirius/sirius-components-trees';
+import { TreeToolBarContributionProps } from '@eclipse-sirius/sirius-components-trees';
 import IconButton from '@material-ui/core/IconButton';
 import { Add as AddIcon } from '@material-ui/icons';
 import { Fragment, useState } from 'react';
@@ -18,7 +18,7 @@ import { NewDocumentModal } from '../../../modals/new-document/NewDocumentModal'
 
 type Modal = 'NewDocument';
 
-export const NewDocumentModalContribution = ({ disabled, editingContextId }: TreeToolBarContributionComponentProps) => {
+export const NewDocumentModalContribution = ({ disabled, editingContextId }: TreeToolBarContributionProps) => {
   const [modal, setModal] = useState<Modal | null>(null);
 
   let modalElement: JSX.Element | null = null;

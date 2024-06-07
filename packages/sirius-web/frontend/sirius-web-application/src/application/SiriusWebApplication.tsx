@@ -41,7 +41,7 @@ import {
 } from '@eclipse-sirius/sirius-components-forms';
 import { GanttRepresentation } from '@eclipse-sirius/sirius-components-gantt';
 import { PortalRepresentation } from '@eclipse-sirius/sirius-components-portals';
-import { ExplorerView } from '@eclipse-sirius/sirius-components-trees';
+import { ExplorerView, treeToolbarContributionExtensionPoint } from '@eclipse-sirius/sirius-components-trees';
 import { ValidationView } from '@eclipse-sirius/sirius-components-validation';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Theme, ThemeProvider } from '@material-ui/core/styles';
@@ -63,6 +63,8 @@ import { ApolloGraphQLProvider } from '../graphql/ApolloGraphQLProvider';
 import { OnboardArea } from '../onboarding/OnboardArea';
 import { Router } from '../router/Router';
 import { siriusWebTheme as defaultTheme } from '../theme/siriusWebTheme';
+import { NewDocumentModalContribution } from '../views/edit-project/TreeToolBarContributions/NewDocumentModalContribution';
+import { UploadDocumentModalContribution } from '../views/edit-project/TreeToolBarContributions/UploadDocumentModalContribution';
 import { createProjectAreaCardExtensionPoint } from '../views/project-browser/create-projects-area/CreateProjectAreaExtensionPoints';
 import {
   NewProjectCard,
@@ -223,6 +225,15 @@ export const SiriusWebApplication = ({
   internalExtensionRegistry.putData(representationFactoryExtensionPoint, {
     identifier: 'sw_repFactory_portal',
     data: [(representation) => (getType(representation) === 'Portal' ? PortalRepresentation : null)],
+  });
+
+  internalExtensionRegistry.addComponent(treeToolbarContributionExtensionPoint, {
+    identifier: 'sw_treeToolbar_newdoc',
+    Component: NewDocumentModalContribution,
+  });
+  internalExtensionRegistry.addComponent(treeToolbarContributionExtensionPoint, {
+    identifier: 'sw_treeToolbar_uploaddoc',
+    Component: UploadDocumentModalContribution,
   });
 
   if (extensionRegistry) {

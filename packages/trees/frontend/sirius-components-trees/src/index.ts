@@ -10,10 +10,9 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-export * from './toolbar/TreeToolBarContext';
-export * from './toolbar/TreeToolBarContext.types';
 export * from './toolbar/TreeToolBarContribution';
 export * from './toolbar/TreeToolBarContribution.types';
+export * from './toolbar/TreeToolbarExtensionPoints';
 export * from './treeitems/TreeItemContextMenu';
 export * from './treeitems/TreeItemContextMenu.types';
 export * from './treeitems/TreeItemContextMenuContribution';

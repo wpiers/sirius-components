@@ -29,9 +29,6 @@ import {
   TreeItemContextMenuContext,
   TreeItemContextMenuContextValue,
   TreeItemContextMenuContribution,
-  TreeToolBarContext,
-  TreeToolBarContextValue,
-  TreeToolBarContribution,
 } from '@eclipse-sirius/sirius-components-trees';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -57,8 +54,6 @@ import {
 } from './EditProjectViewMachine';
 import { ObjectTreeItemContextMenuContribution } from './ObjectTreeItemContextMenuContribution';
 import { PapayaOperationActivityLabelDetailToolContribution } from './ToolContributions/PapayaOperationActivityLabelDetailToolContribution';
-import { NewDocumentModalContribution } from './TreeToolBarContributions/NewDocumentModalContribution';
-import { UploadDocumentModalContribution } from './TreeToolBarContributions/UploadDocumentModalContribution';
 
 const getProjectQuery = gql`
   query getRepresentation($projectId: ID!, $representationId: ID!, $includeRepresentation: Boolean!) {
@@ -177,10 +172,6 @@ export const EditProjectView = () => {
       />,
     ];
 
-    const treeToolBarContributions: TreeToolBarContextValue = [
-      <TreeToolBarContribution component={NewDocumentModalContribution} />,
-      <TreeToolBarContribution component={UploadDocumentModalContribution} />,
-    ];
     const diagramPaletteToolContributions: DiagramPaletteToolContextValue = [
       <DiagramPaletteToolContribution
         canHandle={(_diagramId, diagramElementId) => {
@@ -200,16 +191,14 @@ export const EditProjectView = () => {
 
     main = (
       <TreeItemContextMenuContext.Provider value={treeItemContextMenuContributions}>
-        <TreeToolBarContext.Provider value={treeToolBarContributions}>
-          <DiagramPaletteToolContext.Provider value={diagramPaletteToolContributions}>
-            <Workbench
-              editingContextId={project.currentEditingContext.id}
-              initialRepresentationSelected={representation}
-              onRepresentationSelected={onRepresentationSelected}
-              readOnly={false}
-            />
-          </DiagramPaletteToolContext.Provider>
-        </TreeToolBarContext.Provider>
+        <DiagramPaletteToolContext.Provider value={diagramPaletteToolContributions}>
+          <Workbench
+            editingContextId={project.currentEditingContext.id}
+            initialRepresentationSelected={representation}
+            onRepresentationSelected={onRepresentationSelected}
+            readOnly={false}
+          />
+        </DiagramPaletteToolContext.Provider>
       </TreeItemContextMenuContext.Provider>
     );
   } else if (editProjectView === 'missing') {

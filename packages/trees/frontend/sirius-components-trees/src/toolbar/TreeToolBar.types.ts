@@ -11,15 +11,14 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import { TreeFilter } from '../views/ExplorerView.types';
-import { TreeToolBarContributionComponentProps } from './TreeToolBarContribution.types';
 
 export interface TreeToolBarProps {
   editingContextId: string;
+  treeId: string;
   synchronized: boolean;
   onSynchronizedClick: () => void;
   treeFilters: TreeFilter[];
   onTreeFilterMenuItemClick: (filters: TreeFilter[]) => void;
-  treeToolBarContributionComponents: ((props: TreeToolBarContributionComponentProps) => JSX.Element)[];
   readOnly: boolean;
 }
 
