@@ -17,19 +17,30 @@ import {
   ExtensionProvider,
   ExtensionRegistry,
   ExtensionRegistryMergeStrategy,
+  RepresentationMetadata,
   RepresentationPathContext,
   ServerContext,
   WorkbenchViewContribution,
+  representationFactoryExtensionPoint,
   workbenchMainAreaExtensionPoint,
   workbenchViewContributionExtensionPoint,
 } from '@eclipse-sirius/sirius-components-core';
-import { NodeTypeContext, NodeTypeContextValue } from '@eclipse-sirius/sirius-components-diagrams';
+import { DeckRepresentation } from '@eclipse-sirius/sirius-components-deck';
+import {
+  DiagramRepresentation,
+  NodeTypeContext,
+  NodeTypeContextValue,
+} from '@eclipse-sirius/sirius-components-diagrams';
+import { FormDescriptionEditorRepresentation } from '@eclipse-sirius/sirius-components-formdescriptioneditors';
 import {
   DetailsView,
+  FormRepresentation,
   PropertySectionContext,
   RelatedElementsView,
   RepresentationsView,
 } from '@eclipse-sirius/sirius-components-forms';
+import { GanttRepresentation } from '@eclipse-sirius/sirius-components-gantt';
+import { PortalRepresentation } from '@eclipse-sirius/sirius-components-portals';
 import { ExplorerView } from '@eclipse-sirius/sirius-components-trees';
 import { ValidationView } from '@eclipse-sirius/sirius-components-validation';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -50,7 +61,6 @@ import { DiagramRepresentationConfigurationProps } from '../diagrams/DiagramRepr
 import { propertySectionsRegistry } from '../forms/defaultPropertySectionRegistry';
 import { ApolloGraphQLProvider } from '../graphql/ApolloGraphQLProvider';
 import { OnboardArea } from '../onboarding/OnboardArea';
-import { RepresentationContextProvider } from '../representations/RepresentationContextProvider';
 import { Router } from '../router/Router';
 import { siriusWebTheme as defaultTheme } from '../theme/siriusWebTheme';
 import { createProjectAreaCardExtensionPoint } from '../views/project-browser/create-projects-area/CreateProjectAreaExtensionPoints';
@@ -180,6 +190,41 @@ export const SiriusWebApplication = ({
     data: projectSettingsTabContributions,
   });
 
+  const getType = (representation: RepresentationMetadata): string => {
+    const query = representation.kind.substring(representation.kind.indexOf('?') + 1, representation.kind.length);
+    const params = new URLSearchParams(query);
+    const type = params.get('type');
+    return type;
+  };
+
+  internalExtensionRegistry.putData(representationFactoryExtensionPoint, {
+    identifier: 'sw_repFactory_diagram',
+    data: [(representation) => (getType(representation) === 'Diagram' ? DiagramRepresentation : null)],
+  });
+  internalExtensionRegistry.putData(representationFactoryExtensionPoint, {
+    identifier: 'sw_repFactory_form',
+    data: [(representation) => (getType(representation) === 'Form' ? FormRepresentation : null)],
+  });
+  internalExtensionRegistry.putData(representationFactoryExtensionPoint, {
+    identifier: 'sw_repFactory_formdesceditor',
+    data: [
+      (representation) =>
+        getType(representation) === 'FormDescriptionEditor' ? FormDescriptionEditorRepresentation : null,
+    ],
+  });
+  internalExtensionRegistry.putData(representationFactoryExtensionPoint, {
+    identifier: 'sw_repFactory_gantt',
+    data: [(representation) => (getType(representation) === 'Gantt' ? GanttRepresentation : null)],
+  });
+  internalExtensionRegistry.putData(representationFactoryExtensionPoint, {
+    identifier: 'sw_repFactory_deck',
+    data: [(representation) => (getType(representation) === 'Deck' ? DeckRepresentation : null)],
+  });
+  internalExtensionRegistry.putData(representationFactoryExtensionPoint, {
+    identifier: 'sw_repFactory_portal',
+    data: [(representation) => (getType(representation) === 'Portal' ? PortalRepresentation : null)],
+  });
+
   if (extensionRegistry) {
     internalExtensionRegistry.addAll(
       extensionRegistry,
@@ -197,15 +242,13 @@ export const SiriusWebApplication = ({
               <RepresentationPathContext.Provider value={{ getRepresentationPath }}>
                 <ToastProvider>
                   <ConfirmationDialogContextProvider>
-                    <RepresentationContextProvider>
-                      <NodeTypeContext.Provider value={nodeTypeRegistryValue}>
-                        <PropertySectionContext.Provider value={{ propertySectionsRegistry }}>
-                          <div style={style}>
-                            <Router />
-                          </div>
-                        </PropertySectionContext.Provider>
-                      </NodeTypeContext.Provider>
-                    </RepresentationContextProvider>
+                    <NodeTypeContext.Provider value={nodeTypeRegistryValue}>
+                      <PropertySectionContext.Provider value={{ propertySectionsRegistry }}>
+                        <div style={style}>
+                          <Router />
+                        </div>
+                      </PropertySectionContext.Provider>
+                    </NodeTypeContext.Provider>
                   </ConfirmationDialogContextProvider>
                 </ToastProvider>
               </RepresentationPathContext.Provider>

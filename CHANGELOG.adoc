@@ -43,6 +43,7 @@
 - https://github.com/eclipse-sirius/sirius-web/issues/3557[#3563] [app] Improve NavigationBar extensibility
 - https://github.com/eclipse-sirius/sirius-web/issues/3557[#3587] [app] Add CreateProjectCard extension point
 - https://github.com/eclipse-sirius/sirius-web/issues/3557[#3591] [app] Add EditProject subtitle extension point
+- https://github.com/eclipse-sirius/sirius-web/issues/3557[#3553] [core] Add RepresentationFactory extension point
 
 === Improvements
 

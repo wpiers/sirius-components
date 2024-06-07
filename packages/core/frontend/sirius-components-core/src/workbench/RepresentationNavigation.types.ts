@@ -10,11 +10,11 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-import { Representation } from './Workbench.types';
+import { RepresentationMetadata } from './Workbench.types';
 
 export type RepresentationNavigationProps = {
-  representations: Representation[];
-  displayedRepresentation: Representation;
-  onRepresentationClick: (representation: Representation) => void;
-  onClose: (representation: Representation) => void;
+  representations: RepresentationMetadata[];
+  displayedRepresentation: RepresentationMetadata;
+  onRepresentationClick: (representation: RepresentationMetadata) => void;
+  onClose: (representation: RepresentationMetadata) => void;
 };
