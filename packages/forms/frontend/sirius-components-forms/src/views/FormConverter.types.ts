@@ -12,6 +12,9 @@
  *******************************************************************************/
 
 import { GQLForm } from '../form/FormEventFragments.types';
+export interface FormConverterProvider {
+  converter(editingContextId: string): FormConverter;
+}
 
 export interface FormConverter {
   convert(form: GQLForm): GQLForm;

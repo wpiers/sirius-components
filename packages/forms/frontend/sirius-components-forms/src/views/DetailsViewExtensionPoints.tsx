@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 Obeo.
+ * Copyright (c) 2024 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,16 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
+import { DataExtensionPoint } from '@eclipse-sirius/sirius-components-core';
+import { FormConverterProvider } from './FormConverter.types';
 
-import { FormConverter } from './FormConverter.types';
-export interface DetailsViewContextValue {
-  converter: FormConverter;
-}
+export const detailsViewFormConverterProviderExtensionPoint: DataExtensionPoint<FormConverterProvider> = {
+  identifier: 'detailsView#formConverterProvider',
+  fallback: {
+    converter: () => {
+      return {
+        convert: (form) => form,
+      };
+    },
+  },
+};

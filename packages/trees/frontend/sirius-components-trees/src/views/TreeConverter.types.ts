@@ -13,6 +13,9 @@
 
 import { GQLTree } from './TreeView.types';
 
+export interface TreeConverterProvider {
+  converter(editingContextId: string): TreeConverter;
+}
 export interface TreeConverter {
   convert(tree: GQLTree): GQLTree;
 }

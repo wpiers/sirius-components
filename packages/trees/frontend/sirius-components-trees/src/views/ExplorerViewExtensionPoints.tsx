@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 Obeo.
+ * Copyright (c) 2024 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,16 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
+import { DataExtensionPoint } from '@eclipse-sirius/sirius-components-core';
+import { TreeConverterProvider } from './TreeConverter.types';
 
-import { TreeConverter } from './TreeConverter.types';
-
-export interface ExplorerViewContextValue {
-  converter: TreeConverter;
-}
+export const explorerViewTreeConverterProviderExtensionPoint: DataExtensionPoint<TreeConverterProvider> = {
+  identifier: 'explorerView#treeConverterProvider',
+  fallback: {
+    converter: () => {
+      return {
+        convert: (tree) => tree,
+      };
+    },
+  },
+};

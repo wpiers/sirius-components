@@ -10,7 +10,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-import { WorkbenchViewComponentProps } from '@eclipse-sirius/sirius-components-core';
+import { WorkbenchViewComponentProps, useData } from '@eclipse-sirius/sirius-components-core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { TreeToolBar } from '../toolbar/TreeToolBar';
@@ -18,7 +18,7 @@ import { TreeToolBarContext } from '../toolbar/TreeToolBarContext';
 import { TreeToolBarContextValue } from '../toolbar/TreeToolBarContext.types';
 import { FilterBar } from '../trees/FilterBar';
 import { ExplorerViewState, TreeFilter } from './ExplorerView.types';
-import { useExplorerViewConfiguration } from './ExplorerViewConfiguration';
+import { explorerViewTreeConverterProviderExtensionPoint } from './ExplorerViewExtensionPoints';
 import { TreeView } from './TreeView';
 import { useTreeFilters } from './useTreeFilters';
 
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ExplorerView = ({ editingContextId, readOnly }: WorkbenchViewComponentProps) => {
   const styles = useStyles();
-  const { converter } = useExplorerViewConfiguration();
+  const { data: converterProvider } = useData(explorerViewTreeConverterProviderExtensionPoint);
 
   const initialState: ExplorerViewState = {
     synchronizedWithSelection: true,
@@ -142,7 +142,7 @@ export const ExplorerView = ({ editingContextId, readOnly }: WorkbenchViewCompon
           activeFilterIds={activeTreeFilterIds}
           textToHighlight={state.filterBarText}
           textToFilter={state.filterBarTreeFiltering ? state.filterBarText : null}
-          converter={converter}
+          converter={converterProvider.converter(editingContextId)}
         />
       </div>
     </div>
